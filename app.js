@@ -8,9 +8,10 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+app.use(express.json());
 
 //routes
-app.use('/app/v1/tours', tourRouter);
-app.use('/app/v1/users', userRouter);
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 module.exports = app;
