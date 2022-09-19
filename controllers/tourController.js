@@ -11,8 +11,8 @@ exports.topFiveCheap = async (req, res, next) => {
 
 exports.getAllTours = trycatch(async (req, res) => {
   //Execute query
-  const buildQuery = new APIquery(Tour.find(), req.query).filter().sort().fields().page();
-  const tours = await buildQuery.foundQuery;
+  const execQuery = new APIquery(Tour, req.query).sort().fields().page();
+  const tours = await execQuery.foundQuery;
 
   res.status(200).json({
     status: 'success',
@@ -23,6 +23,9 @@ exports.getAllTours = trycatch(async (req, res) => {
 
 exports.getTour = trycatch(async (req, res) => {
   const tour = await Tour.findById(req.params.id);
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: tour,
@@ -41,6 +44,10 @@ exports.createTour = trycatch(async (req, res) => {
 exports.updateTour = trycatch(async (req, res) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: tour,
@@ -48,7 +55,11 @@ exports.updateTour = trycatch(async (req, res) => {
 });
 
 exports.deleteTour = trycatch(async (req, res) => {
-  await Tour.deleteOne({ _id: req.params.id });
+  const tour = await Tour.deleteOne({ _id: req.params.id });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
 
   res.status(204).json({
     status: 'success',

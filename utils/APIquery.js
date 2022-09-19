@@ -1,20 +1,18 @@
 const APIquery = class {
-  constructor(foundQuery, reqQuery) {
-    this.foundQuery = foundQuery;
+  constructor(model, reqQuery) {
+    this.foundQuery = model;
     this.reqQuery = reqQuery;
-  }
-  filter() {
+
     const queryObj = { ...this.reqQuery };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(el => delete queryObj[el]); //排除'page', 'sort', 'limit', 'fields'項目
-    let queryStr = JSON.stringify(queryObj);
 
     //為query添加條件篩選 : 找出duration>5的
     /* MongoDb用法: {duration:{$gt:5}} */
-    // http://localhost:3000/?durantion[gt]=5 => { duration: { 'gt': '5' } } 缺$符
+    // http://localhost:3000/?duration[gt]=5 => { duration: { 'gt': '5' } } 缺$符
+    let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
     this.foundQuery = this.foundQuery.find(JSON.parse(queryStr));
-    return this;
   }
 
   sort() {
