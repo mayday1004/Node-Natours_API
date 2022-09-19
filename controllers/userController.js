@@ -9,14 +9,7 @@ exports.getUser = trycatch(async (req, res) => {
   console.log('getUser');
 });
 
-exports.createUser = trycatch(async (req, res) => {
-  const newUser = await User.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: newUser,
-  });
-});
+exports.createUser = trycatch(async (req, res) => {});
 
 exports.updateUser = trycatch(async (req, res) => {
   console.log('updateUser');
