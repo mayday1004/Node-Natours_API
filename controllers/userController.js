@@ -1,19 +1,27 @@
-exports.getAllUsers = (req, res) => {
+const User = require('../models/userModel');
+const trycatch = require('../utils/trycatch');
+
+exports.getAllUsers = trycatch(async (req, res) => {
   console.log('getAllUsers');
-};
+});
 
-exports.getUser = (req, res) => {
+exports.getUser = trycatch(async (req, res) => {
   console.log('getUser');
-};
+});
 
-exports.createUser = (req, res) => {
-  console.log('createUser');
-};
+exports.createUser = trycatch(async (req, res) => {
+  const newUser = await User.create(req.body);
 
-exports.updateUser = (req, res) => {
+  res.status(201).json({
+    status: 'success',
+    data: newUser,
+  });
+});
+
+exports.updateUser = trycatch(async (req, res) => {
   console.log('updateUser');
-};
+});
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = trycatch(async (req, res) => {
   console.log('deleteUser');
-};
+});

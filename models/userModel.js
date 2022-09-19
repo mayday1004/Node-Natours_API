@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -44,6 +45,17 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+});
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    // mongoose:Document.prototype.isModified() 送進來的資料password有異動就會回傳true
+    return next();
+  }
+  this.password = await bcrypt.hash(this.password, 12);
+
+  this.passwordConfirm = undefined; // 密碼確認且加密完就不需要這個ㄌ
+  next();
 });
 
 module.exports = mongoose.model('User', userSchema);
