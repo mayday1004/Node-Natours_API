@@ -30,7 +30,7 @@ module.exports = (err, req, res, next) => {
     });
     //在用戶環境下錯誤訊息盡可能簡單
   } else if (process.env.NODE_ENV === 'production') {
-    // 這裡的錯誤既不是用戶操作不當，也不是我們編碼有錯，這裡的錯誤是mongoose發出的:
+    // 這裡的錯誤是mongoose發出的:
 
     // 1)查詢無效ID CastError
     let copyError = Object.assign(err); //替appError做淺拷貝
@@ -57,6 +57,9 @@ module.exports = (err, req, res, next) => {
 
       // 這裡的錯誤是編程錯誤或一些未知錯誤:我們不想給用戶太多細節
     } else {
+      // log error
+      console.error(`ERROR💥:`, err);
+      //send message to client
       res.status(500).json({
         status: 'error',
         message: 'something went wrong!',
