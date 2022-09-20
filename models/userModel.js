@@ -58,4 +58,8 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.methods.comparePassword = async function (originPassword, cryptoPassword) {
+  return await bcrypt.compare(originPassword, cryptoPassword); // ! 驗證原始密碼跟加密後密碼是否相等
+};
+
 module.exports = mongoose.model('User', userSchema);
