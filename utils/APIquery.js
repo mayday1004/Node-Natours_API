@@ -12,7 +12,7 @@ const APIquery = class {
     // http://localhost:3000/?duration[gt]=5 => { duration: { 'gt': '5' } } 缺$符
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    this.foundQuery = this.foundQuery.find(JSON.parse(queryStr));
+    this.foundQuery = this.foundQuery.find(JSON.parse(queryStr)).setOptions({ strictQuery: false });
   }
 
   sort() {

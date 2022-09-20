@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIquery = require('../utils/APIquery');
 const trycatch = require('../utils/trycatch');
+const AppError = require('./../utils/appError');
 
 exports.topFiveCheap = async (req, res, next) => {
   req.query.limit = 5;
@@ -21,7 +22,7 @@ exports.getAllTours = trycatch(async (req, res) => {
   });
 });
 
-exports.getTour = trycatch(async (req, res) => {
+exports.getTour = trycatch(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   if (!tour) {
     return next(new AppError('No tour found with that ID', 404));
@@ -41,7 +42,7 @@ exports.createTour = trycatch(async (req, res) => {
   });
 });
 
-exports.updateTour = trycatch(async (req, res) => {
+exports.updateTour = trycatch(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
   if (!tour) {
@@ -54,7 +55,7 @@ exports.updateTour = trycatch(async (req, res) => {
   });
 });
 
-exports.deleteTour = trycatch(async (req, res) => {
+exports.deleteTour = trycatch(async (req, res, next) => {
   const tour = await Tour.deleteOne({ _id: req.params.id });
 
   if (!tour) {
