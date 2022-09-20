@@ -83,7 +83,18 @@ exports.protect = trycatch(async (req, res, next) => {
     return next(new AppError('User recently changed password! Please login again.', 401));
   }
 
-  // 這個動作是為了傳遞數據留在後續使用:幫req物件新增一個user項目存了currentUser的ID
+  // 這個動作是為了傳遞數據留在後續使用:幫req物件新增一個user項目存了當前User的ID
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // restrictTo('admin','lead-guide'). role='user'
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('You do not have permission to perform this action', 403));
+    }
+
+    next();
+  };
+};
