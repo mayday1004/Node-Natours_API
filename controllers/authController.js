@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const trycatch = require('../utils/trycatch');
@@ -9,22 +10,30 @@ const signToken = function (id) {
   });
 };
 
-exports.signup = trycatch(async (req, res) => {
-  //! const newUser = await User.create(req.body);  這樣寫很危險，很容易直接串改帳號等級...
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  });
+exports.signup = trycatch(async (req, res, next) => {
+  // 先確認email有沒有被註冊過
+  const isExistAc = await User.findOne({ email: req.body.email });
 
-  // 註冊時生成JWT令牌，用作未來驗證身分用
-  const token = signToken(newUser._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: newUser,
-  });
+  //! const newUser = await User.create(req.body);  這樣寫很危險，很容易直接串改帳號等級...
+  if (isExistAc) {
+    return next(new AppError('This account is existed.', 401));
+  } else {
+    const newUser = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      passwordChangedAt: req.body.passwordChangedAt,
+    });
+
+    // 註冊時生成JWT令牌，用作未來驗證身分用
+    const token = signToken(newUser._id);
+    res.status(201).json({
+      status: 'success',
+      token,
+      data: newUser,
+    });
+  }
 });
 
 exports.login = trycatch(async (req, res, next) => {
@@ -48,4 +57,33 @@ exports.login = trycatch(async (req, res, next) => {
     status: 'success',
     token,
   });
+});
+
+exports.protect = trycatch(async (req, res, next) => {
+  let token;
+  // 確認有沒有獲得JWT令牌
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(new AppError('You are not logged in! Please log in to get access.', 401));
+  }
+  // 驗證JWT令牌是否有效
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // !到這裡為止我們還有兩項安全隱憂需要考慮:1)如果用戶在登入後刪除帳號 2)或是改了密碼那麼舊令牌必須要失效
+  //  1)用戶在登入後刪除帳號=>確認資料庫是否還能查到該用戶ID
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(new AppError('Can not found this AccountID.', 401));
+  }
+  //  2)確認用戶是否有更改密碼:資料庫內更改密碼的時間(passwordChangedAt)在令牌生成的時間點之後(decoded.iat)代表改過密碼
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(new AppError('User recently changed password! Please login again.', 401));
+  }
+
+  // 這個動作是為了傳遞數據留在後續使用:幫req物件新增一個user項目存了currentUser的ID
+  req.user = currentUser;
+  next();
 });

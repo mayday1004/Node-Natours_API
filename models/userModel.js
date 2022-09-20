@@ -59,7 +59,18 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (originPassword, cryptoPassword) {
-  return await bcrypt.compare(originPassword, cryptoPassword); // ! 驗證原始密碼跟加密後密碼是否相等
+  return await bcrypt.compare(originPassword, cryptoPassword); // 驗證原始密碼跟加密後密碼是否相等
+};
+
+userSchema.methods.changedPasswordAfter = function (decodedIat) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+    return decodedIat < changedTimestamp; //更改密碼的時間(passwordChangedAt)在令牌生成的時間點之後(decoded.iat)代表改過密碼
+  }
+
+  // False means NOT changed
+  return false;
 };
 
 module.exports = mongoose.model('User', userSchema);

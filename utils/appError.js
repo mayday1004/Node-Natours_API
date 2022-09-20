@@ -4,7 +4,7 @@ class AppError extends Error {
     super(message);
 
     this.statusCode = statusCode;
-    this.status = `statusCode`.startsWith('4') ? 'fail' : 'error';
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     // 判斷當前發生的錯誤是不是我們預測中的
     this.isOperational = true;
 

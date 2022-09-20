@@ -11,9 +11,18 @@ const duplicateKeyErrorDB = err => {
 };
 
 const validationErrorDB = err => {
+  console.log(err);
   const errors = Object.values(err.errors).map(el => el.message);
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
+};
+
+const jwtError = () => {
+  return new AppError('Invalid token. Please login again', 401);
+};
+
+const tokenExpiredError = () => {
+  return new AppError('Token Expired. Please login again', 401);
 };
 
 module.exports = (err, req, res, next) => {
@@ -31,7 +40,6 @@ module.exports = (err, req, res, next) => {
     //在用戶環境下錯誤訊息盡可能簡單
   } else if (process.env.NODE_ENV === 'production') {
     // 這裡的錯誤是mongoose發出的:
-
     // 1)查詢無效ID CastError
     let copyError = Object.assign(err); //替appError做淺拷貝
     if (copyError.constructor.name === 'CastError') {
@@ -48,13 +56,22 @@ module.exports = (err, req, res, next) => {
       copyError = validationErrorDB(copyError);
     }
 
+    //JWT驗證錯誤
+    if (copyError.name === 'JsonWebTokenError') {
+      copyError = jwtError();
+    }
+
+    //JWT過期
+    if (copyError.name === 'TokenExpiredError') {
+      copyError = tokenExpiredError();
+    }
+
     // 這裡的錯誤是用戶操作錯誤所導致的
     if (copyError.isOperational) {
       res.status(copyError.statusCode).json({
         status: copyError.status,
         message: copyError.message,
       });
-
       // 這裡的錯誤是編程錯誤或一些未知錯誤:我們不想給用戶太多細節
     } else {
       // log error
