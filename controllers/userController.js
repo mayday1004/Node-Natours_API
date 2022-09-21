@@ -49,11 +49,11 @@ exports.updateMe = trycatch(async (req, res, next) => {
     runValidators: true,
   });
 
-  // const token = signToken(req.user._id);
+  const token = signToken(req.user._id);
 
   res.status(200).json({
     status: 'success',
-    // token,
+    token,
     data: updatedUser,
   });
 });
