@@ -1,4 +1,6 @@
 const User = require('../models/userModel');
+const APIquery = require('../utils/APIquery');
+const AppError = require('../utils/appError');
 const trycatch = require('../utils/trycatch');
 
 exports.getAllUsers = trycatch(async (req, res) => {

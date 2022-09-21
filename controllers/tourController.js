@@ -1,7 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIquery = require('../utils/APIquery');
 const trycatch = require('../utils/trycatch');
-const AppError = require('./../utils/appError');
+const AppError = require('../utils/appError');
 
 exports.topFiveCheap = async (req, res, next) => {
   req.query.limit = 5;

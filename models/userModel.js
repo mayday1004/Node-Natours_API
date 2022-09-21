@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -58,6 +59,16 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+
+  next();
+});
+
 userSchema.methods.comparePassword = async function (originPassword, cryptoPassword) {
   return await bcrypt.compare(originPassword, cryptoPassword); // 驗證原始密碼跟加密後密碼是否相等
 };
@@ -71,6 +82,17 @@ userSchema.methods.changedPasswordAfter = function (decodedIat) {
 
   // False means NOT changed
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  // 產生一個 32Bytes 長度的亂數資料，並轉成字串
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  // 將resetToken利用sha256加密，並返回16進製字串，最後存進資料庫
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  //加密後的token期限10分鐘
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 module.exports = mongoose.model('User', userSchema);
