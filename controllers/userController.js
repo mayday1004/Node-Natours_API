@@ -42,19 +42,38 @@ exports.updateMe = trycatch(async (req, res, next) => {
 
   // 2) 只允許用戶去更改非密碼以外的資訊，但我們不想讓用戶嘗試通過 Postman強制改寫role的種類，所以在這一步做一些過濾
   const filteredBody = filterObj(req.body, 'name', 'email');
-
   // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
-  });
+  }).select('-__v');
 
-  const token = signToken(req.user._id);
+  const token = signToken(updatedUser._id);
 
   res.status(200).json({
     status: 'success',
     token,
     data: updatedUser,
+  });
+});
+
+// 實際上並沒有要真的將帳號從資料庫移除，而是將帳戶設置成非活動狀態，這樣能在未來的時間點重新激活帳戶
+// !這樣做可能會違反一些法律規定，有些國家是禁止以這種方式欺騙用戶
+// exports.deleteMe = trycatch(async (req, res) => {
+//   await User.findByIdAndUpdate(req.user.id, { active: false });
+
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// });
+
+exports.deleteMe = trycatch(async (req, res) => {
+  await User.deleteOne({ _id: req.user.id });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
   });
 });
 
