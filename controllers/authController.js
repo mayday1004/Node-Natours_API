@@ -132,7 +132,7 @@ exports.forgotPassword = trycatch(async (req, res, next) => {
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
-    await user.save({ validateBeforeSave: false }); //{ validateBeforeSave: false }關閉schema驗證器
+    await user.save({ validateModifiedOnly: true });
 
     return next(new AppError('There was an error sending the email. Try again later!'), 500);
   }
@@ -156,6 +156,30 @@ exports.resetPassword = trycatch(async (req, res, next) => {
   await user.save();
   // 3) Update changedPasswordAt property before user.save
   // 4) Log the user in, send JWT
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
+
+// 用戶自己更新自己的密碼
+exports.updatePassword = trycatch(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2) 讓用戶再次輸入當前密碼，確認無誤才放行更改密碼
+  if (!(await user.comparePassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong.', 401));
+  }
+
+  // 3) If so, update password
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.newPasswordConfirm;
+  await user.save();
+  // User.findByIdAndUpdate will NOT work as intended!
+
+  // 4) Log user in, send JWT
   const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
