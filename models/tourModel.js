@@ -111,11 +111,19 @@ const tourSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true }, //當被輸出為JSON時虛擬屬性要顯示
     toObject: { virtuals: true }, //當被輸出為Object時虛擬屬性要顯示
+    id: false,
   }
 );
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 tourSchema.pre('save', function (next) {
