@@ -69,10 +69,10 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-userSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
+// userSchema.pre(/^find/, function (next) {
+//   this.find({ active: { $ne: false } });
+//   next();
+// });
 
 userSchema.methods.comparePassword = async function (originPassword, cryptoPassword) {
   return await bcrypt.compare(originPassword, cryptoPassword); // 驗證原始密碼跟加密後密碼是否相等

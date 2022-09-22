@@ -25,7 +25,6 @@ exports.signup = trycatch(async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
-      passwordChangedAt: req.body.passwordChangedAt,
     });
 
     // 註冊時生成JWT令牌，用作未來驗證身分用
