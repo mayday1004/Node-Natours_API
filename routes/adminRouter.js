@@ -8,7 +8,7 @@ router.use(authController.protect, authController.restrictTo('admin'));
 router.route('/').get(adminController.getAllUsers);
 
 router
-  .route('/:id')
+  .route('/:userId')
   .get(adminController.getUser)
   .patch(adminController.updateUser)
   .delete(adminController.deleteUser);
