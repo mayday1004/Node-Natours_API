@@ -12,6 +12,25 @@ const signToken = function (id) {
   });
 };
 
+const sendTokenWithCookies = function (req, res, user, statusCode) {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+  }
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: user.toJSON(),
+  });
+};
+
 exports.signup = trycatch(async (req, res, next) => {
   // 先確認email有沒有被註冊過
   const isExistAc = await User.findOne({ email: req.body.email });
@@ -28,12 +47,13 @@ exports.signup = trycatch(async (req, res, next) => {
     });
 
     // 註冊時生成JWT令牌，用作未來驗證身分用
-    const token = signToken(newUser._id);
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: newUser,
-    });
+    sendTokenWithCookies(req, res, newUser, 201);
+    // const token = signToken(newUser._id);
+    // res.status(201).json({
+    //   status: 'success',
+    //   token,
+    //   data: newUser.toJSON(),
+    // });
   }
 });
 
@@ -53,11 +73,12 @@ exports.login = trycatch(async (req, res, next) => {
   }
 
   //? 3)如果都正確發送令牌
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  sendTokenWithCookies(req, res, user, 200);
+  // const token = signToken(user._id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
 });
 
 exports.protect = trycatch(async (req, res, next) => {
@@ -155,11 +176,12 @@ exports.resetPassword = trycatch(async (req, res, next) => {
   await user.save();
   // 3) Update changedPasswordAt property before user.save
   // 4) Log the user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  sendTokenWithCookies(req, res, user, 200);
+  // const token = signToken(user._id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
 });
 
 // 用戶自己更新自己的密碼
@@ -179,9 +201,10 @@ exports.updatePassword = trycatch(async (req, res, next) => {
   // User.findByIdAndUpdate will NOT work as intended!
 
   // 4) Log user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  sendTokenWithCookies(req, res, user, 200);
+  // const token = signToken(user._id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
 });

@@ -100,4 +100,12 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
+// 不想res一些屬性給用戶看到
+userSchema.methods.toJSON = function () {
+  const sentUserData = this.toObject();
+  delete sentUserData.password;
+  delete sentUserData.__v;
+  return sentUserData;
+};
+
 module.exports = mongoose.model('User', userSchema);
