@@ -75,7 +75,7 @@ exports.updateMe = trycatch(async (req, res, next) => {
 // });
 
 exports.deleteMe = trycatch(async (req, res) => {
-  await User.deleteOne({ _id: req.user.id });
+  await User.findByIdAndDelete(req.user.id);
 
   res.status(204).json({
     status: 'success',

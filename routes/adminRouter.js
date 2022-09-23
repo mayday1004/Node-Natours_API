@@ -5,10 +5,9 @@ const router = express.Router();
 
 router.use(authController.protect, authController.restrictTo('admin'));
 
-router.route('/').get(adminController.getAllUsers);
-
+router.route('/').get(adminController.getAllUsers).post(adminController.createUser);
 router
-  .route('/:userId')
+  .route('/:id')
   .get(adminController.getUser)
   .patch(adminController.updateUser)
   .delete(adminController.deleteUser);

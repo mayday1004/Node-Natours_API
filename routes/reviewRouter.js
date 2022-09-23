@@ -2,7 +2,8 @@ const express = require('express');
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
 
-const router = express.Router();
+// ! 缺少{ mergeParams: true }的話會得不到/:toursId
+const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
 

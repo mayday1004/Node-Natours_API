@@ -40,7 +40,16 @@ app.use(xss());
 // 避免參數汙染:query一堆重複的field
 app.use(
   hpp({
-    whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'],
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+      'rating',
+      'role',
+    ],
   })
 );
 
@@ -48,7 +57,7 @@ app.use(
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
-app.use('/admin', adminRouter);
+app.use('/api/v1/admin', adminRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

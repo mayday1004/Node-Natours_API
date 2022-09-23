@@ -128,7 +128,7 @@ exports.forgotPassword = trycatch(async (req, res, next) => {
     return next(new AppError('There is no user with email address.', 404));
   }
 
-  // 2) Generate the random reset token :這是生成更改密碼的email上的連結，該連結有個token代表是我們系統發出的
+  // 2) 生成改密碼email上的連結隨機碼，隨機碼為原始token，同時加密的token則存在資料庫裡
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateModifiedOnly: true }); // 保存用戶更新而不跳過驗證步驟並且僅驗證修改的字段的單線解決方案：
 
@@ -159,16 +159,18 @@ exports.forgotPassword = trycatch(async (req, res, next) => {
 });
 
 exports.resetPassword = trycatch(async (req, res, next) => {
-  // 1) 確認用戶使用的更改密碼Token還在期限內且沒有作假
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
   const user = await User.findOne({
+    // 1) 確認用戶email的隨機碼Token經過加密與資料庫存的加密隨機碼一致
     passwordResetToken: hashedToken,
+    // 2) 且隨機碼期限在10分鐘以內
     passwordResetExpires: { $gt: Date.now() },
   });
-  // 2) If token has not expired, and there is user, set the new password
+
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));
   }
+
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;

@@ -1,8 +1,14 @@
 const express = require('express');
-const router = express.Router();
-
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
+const reviewRouter = require('./reviewRouter');
+
+const router = express.Router();
+
+// POST /tours/234fad4/reviews
+// GET /tours/234fad4/reviews
+router.use('/:tourId/reviews', reviewRouter);
 
 //query
 router.route('/top-5-cheap').get(tourController.topFiveCheap, tourController.getAllTours);
