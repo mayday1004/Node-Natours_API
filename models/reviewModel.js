@@ -35,6 +35,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// 防止用戶對同一個行程重複評論
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/save|^find/i, function (next) {
   this.populate({
     path: 'user',
@@ -42,6 +45,41 @@ reviewSchema.pre(/save|^find/i, function (next) {
   });
 
   next();
+});
+
+// 為tourModel的ratingsQuantity/ratingsAverage兩個fields自動計算
+// 這兩個fields分別記錄評論數量，以及平均評分
+// 每當評論有增減這兩個fields更動，自動計算數量/平均評分，
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+// 也就是說每次create/update/delete評論的情況都要調用calcAverageRatings()
+reviewSchema.post(/save|^findOneAnd/, async function (doc) {
+  await doc.constructor.calcAverageRatings(doc.tour);
 });
 
 reviewSchema.methods.toJSON = function () {
