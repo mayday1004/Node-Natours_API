@@ -22,6 +22,15 @@ router
     tourController.getMonthlyPlan
   );
 
+//取得center半徑distance(英里/公里)的行程
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(tourController.getToursWithin);
+// /tours-within?distance=233&center=-118.113491,34.111745&unit=mi
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
+
+//取得指定點到旅行目的地的距離
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+// /distances/34.111745,-118.113491/unit/mi
+
 router
   .route('/')
   .get(tourController.getAllTours)

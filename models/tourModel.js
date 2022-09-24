@@ -115,6 +115,8 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+tourSchema.index({ startLocation: '2dsphere' });
+
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
@@ -141,8 +143,10 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+// 因為$geoNear的關係，原本不顯示秘密行程的功能會妨礙$geoNear，必須改為
 tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  if (!Object.keys(this.pipeline()[0])[0] === '$geoNear')
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
 

@@ -142,3 +142,68 @@ exports.getMonthlyPlan = trycatch(async (req, res) => {
     },
   });
 });
+
+// /tours-within/:distance/center/:latlng/unit/:unit
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
+exports.getToursWithin = trycatch(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  //MongoDB 需要以弧度(不是弧長)表示值
+  //要將距離轉換為弧度，只需將距離值除以球體（地球）的半徑，其中：
+  //3963.2 是以英里為單位的地球半徑
+  //6378.1 是地球的半徑，單位為 Km
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    next(new AppError('Please provide latitutr and longitude in the format lat,lng.', 400));
+  }
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
+
+exports.getDistances = trycatch(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    next(new AppError('Please provide latitutr and longitude in the format lat,lng.', 400));
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      // $geoNear按照離指定點最近到最遠的順序輸出文檔，$geoNear必須作為aggregate的第一階段，前面不能有其他aggregate
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [+lng, +lat],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: distances,
+  });
+});
