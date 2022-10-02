@@ -6,7 +6,9 @@ const ShareLayout = () => {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <main className='main'>
+        <Outlet />
+      </main>
       <Footer />
     </>
   );

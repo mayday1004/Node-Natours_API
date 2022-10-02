@@ -63,16 +63,12 @@ const AppProvider = ({ children }) => {
 
   //USER
   const addUserToCookie = ({ user, token }) => {
-    // localStorage.setItem('user', JSON.stringify(user));
-    // localStorage.setItem('token', token);
     Cookies.set('token', token, { expires: 1 });
     Cookies.set('user', JSON.stringify(user), {
       expires: 1,
     });
   };
   const removeUserFromCookie = () => {
-    // localStorage.removeItem('token');
-    // localStorage.removeItem('user');
     Cookies.remove('token', { path: '' });
     Cookies.remove('user', { path: '' });
   };
