@@ -61,11 +61,9 @@ exports.protect = trycatch(async (req, res, next) => {
   // 確認有沒有獲得JWT令牌
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.token) {
+    token = req.cookies.token;
   }
-  // } else if (req.cookies.token) {
-  //   token = req.cookies.token;
-  // }
-  console.log(req.cookies);
 
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));

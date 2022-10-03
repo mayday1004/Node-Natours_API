@@ -114,6 +114,7 @@ userSchema.methods.signToken = function () {
 userSchema.methods.toJSON = function () {
   const sentUserData = this.toObject();
   delete sentUserData.password;
+  delete sentUserData.passwordChangedAt;
   delete sentUserData.active;
   delete sentUserData.__v;
   delete sentUserData._id;

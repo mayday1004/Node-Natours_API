@@ -2,7 +2,16 @@ import React, { useReducer, useContext } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import reducer from './reducer';
-import { CLEAR_ALERT, SETUP_USER_BEGIN, SETUP_USER_SUCCESS, SETUP_USER_ERROR, LOGOUT_USER } from './action';
+import {
+  CLEAR_ALERT,
+  SETUP_USER_BEGIN,
+  SETUP_USER_SUCCESS,
+  SETUP_USER_ERROR,
+  LOGOUT_USER,
+  UPDATE_USER_BEGIN,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR,
+} from './action';
 
 const token = Cookies.get('token');
 const user = Cookies.get('user');
@@ -51,7 +60,6 @@ const AppProvider = ({ children }) => {
     dispatch({ type: SETUP_USER_BEGIN });
     try {
       const { data } = await authFetch.post(`/users/${endPoint}`, currentUser);
-      console.log(data);
       const { user, token } = data;
       dispatch({
         type: SETUP_USER_SUCCESS,
@@ -73,6 +81,25 @@ const AppProvider = ({ children }) => {
     removeUserFromCookie();
   };
 
+  const updateUser = async ({ currentUser, endPoint, alertText }) => {
+    dispatch({ type: UPDATE_USER_BEGIN });
+    try {
+      const { data } = await authFetch.patch(`/users/${endPoint}`, currentUser);
+      const { user, token } = data;
+      dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: { user, token, alertText },
+      });
+      addUserToCookie({ user, token });
+    } catch (error) {
+      dispatch({
+        type: UPDATE_USER_ERROR,
+        payload: { message: error.response.data.message },
+      });
+    }
+    clearAlert();
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -80,6 +107,7 @@ const AppProvider = ({ children }) => {
         clearAlert,
         setupUser,
         logoutUser,
+        updateUser,
       }}
     >
       {children}

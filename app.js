@@ -1,6 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
-const Cookies = require('js-cookie');
+const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -33,6 +33,7 @@ const limiter = rateLimit({
 // app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // 數據消毒，防止數據庫查詢注入
 app.use(mongoSanitize());
