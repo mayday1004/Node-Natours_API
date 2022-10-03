@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoGreen from '../assets/images/logo-green.png';
 
 const Footer = () => {
   return (
     <footer className='footer'>
       <div className='footer__logo'>
-        <img src={logoGreen} alt='Natour logo' />
+        <img src='images/logo-green.png' alt='Natour logo' />
       </div>
       <ul className='footer__nav'>
         <li>

@@ -10,11 +10,7 @@ const TourCard = () => {
       <div className='card__header'>
         <div className='card__picture'>
           <div className='card__picture-overlay'>&nbsp;</div>
-          <img
-            className='card__picture-img'
-            src='../assets/images/tours/tour-2-cover.jpg'
-            alt='The Sea Explorer'
-          />
+          <img className='card__picture-img' src='images/tours/tour-2-cover.jpg' alt='The Sea Explorer' />
         </div>
         <h3 className='heading-tertirary'>
           <span>The Sea Explorer</span>

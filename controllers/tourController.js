@@ -18,7 +18,7 @@ exports.getAllTours = trycatch(async (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
-    data: tours,
+    tour: tours,
   });
 });
 
@@ -29,7 +29,7 @@ exports.getTour = trycatch(async (req, res, next) => {
   }
   res.status(200).json({
     status: 'success',
-    data: tour,
+    tour: tour,
   });
 });
 
@@ -38,7 +38,7 @@ exports.createTour = trycatch(async (req, res) => {
 
   res.status(201).json({
     status: 'success',
-    data: newTour,
+    tour: newTour,
   });
 });
 
@@ -51,7 +51,7 @@ exports.updateTour = trycatch(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: tour,
+    tour: tour,
   });
 });
 
@@ -64,7 +64,7 @@ exports.deleteTour = trycatch(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: null,
+    tour: null,
   });
 });
 
@@ -92,7 +92,7 @@ exports.getTourStats = trycatch(async (req, res) => {
   res.status(200).json({
     status: 'success',
     results: stats.length,
-    data: stats,
+    tour: stats,
   });
 });
 
@@ -137,9 +137,7 @@ exports.getMonthlyPlan = trycatch(async (req, res) => {
   res.status(200).json({
     status: 'success',
     results: plan.length,
-    data: {
-      plan,
-    },
+    tour: plan,
   });
 });
 
@@ -166,9 +164,7 @@ exports.getToursWithin = trycatch(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
-    data: {
-      data: tours,
-    },
+    tour: tours,
   });
 });
 
@@ -204,6 +200,6 @@ exports.getDistances = trycatch(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: distances,
+    tour: distances,
   });
 });

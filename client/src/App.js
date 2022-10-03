@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AllTours, TourInfo, Login, Register, Profile, Error, ShareLayout } from './pages';
+import { AllTours, TourInfo, Login, Register, Profile, Error, ShareLayout, ProtectRoute } from './pages';
 
 const App = () => {
   return (
@@ -11,7 +11,14 @@ const App = () => {
           <Route path='/tour/:slugify' element={<TourInfo />} />
           <Route path='signup' element={<Register />} />
           <Route path='login' element={<Login />} />
-          <Route path='me' element={<Profile />} />
+          <Route
+            path='me'
+            element={
+              <ProtectRoute>
+                <Profile />
+              </ProtectRoute>
+            }
+          />
           <Route path='*' element={<Error />} />
         </Route>
       </Routes>

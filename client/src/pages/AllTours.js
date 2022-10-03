@@ -1,5 +1,5 @@
 import React from 'react';
-import TourCard from '../components/TourCard';
+import { TourCard } from '../components';
 
 const AllTours = () => {
   return (

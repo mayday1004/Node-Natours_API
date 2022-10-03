@@ -1,5 +1,5 @@
 import React from 'react';
-import ReviewCard from '../components/ReviewCard';
+import { ReviewCard } from '../components';
 
 const TourInfo = () => {
   return (

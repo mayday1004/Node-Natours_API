@@ -24,7 +24,7 @@ exports.createReview = trycatch(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
-    data: newReview.toJSON(),
+    review: newReview.toJSON(),
   });
 });
 
@@ -35,7 +35,7 @@ exports.getReview = trycatch(async (req, res, next) => {
   }
   res.status(200).json({
     status: 'success',
-    data: review.toJSON(),
+    review: review.toJSON(),
   });
 });
 
@@ -51,7 +51,7 @@ exports.updateReview = trycatch(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: review.toJSON(),
+    review: review.toJSON(),
   });
 });
 
@@ -64,7 +64,7 @@ exports.deleteReview = trycatch(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: null,
+    review: null,
   });
 });
 
@@ -78,6 +78,6 @@ exports.getAllReviews = trycatch(async (req, res) => {
   res.status(200).json({
     status: 'success',
     results: reviews.length,
-    data: reviews,
+    review: reviews,
   });
 });

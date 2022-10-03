@@ -2,14 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { AiOutlineSetting, AiOutlineStar, AiOutlineCreditCard } from 'react-icons/ai';
 import { RiBriefcase3Line } from 'react-icons/ri';
-import FormRow from '../components/FormRow';
+import { FormRow } from '../components';
+import { useAppContext } from '../contexts/appContext';
 
 const Profile = () => {
+  const { user } = useAppContext();
   return (
-    <div class='user-view'>
-      <nav class='user-view__menu'>
-        <ul class='side-nav'>
-          <li class='side-nav--active'>
+    <div className='user-view'>
+      <nav className='user-view__menu'>
+        <ul className='side-nav'>
+          <li className='side-nav--active'>
             <Link to='#'>
               <AiOutlineSetting />
               Settings
@@ -35,41 +37,41 @@ const Profile = () => {
           </li>
         </ul>
       </nav>
-      <div class='user-view__content'>
-        <div class='user-view__form-container'>
-          <h2 class='heading-secondary ma-bt-md'>Your account settings</h2>
-          <form class='form form-user-data'>
-            <FormRow htmlFor='name' type='text' required='required' text='Your name' />
+      <div className='user-view__content'>
+        <div className='user-view__form-container'>
+          <h2 className='heading-secondary ma-bt-md'>Your account settings</h2>
+          <form className='form form-user-data'>
+            <FormRow name='name' type='text' required='required' text='Your name' />
             <FormRow
               className='ma-bt-md'
-              htmlFor='email'
+              name='email'
               type='email'
               placeholder='you@example.io'
               text='Email address'
             />
-            <div class='form__group form__photo-upload'>
-              <img class='form__user-photo' src='/img/users/user-14.jpg' alt='User photo' />
-              <input class='form__upload' type='file' accept='image/*' id='photo' name='photo' />
-              <label for='photo'>Choose new photo</label>
+            <div className='form__group form__photo-upload'>
+              <img className='form__user-photo' src={`images/users/${user.photo}`} alt='User' />
+              <input className='form__upload' type='file' accept='image/*' id='photo' name='photo' />
+              <label htmlFor='photo'>Choose new photo</label>
             </div>
-            <div class='form__group right'>
-              <button class='btn btn--small btn--green'>Save settings</button>
+            <div className='form__group right'>
+              <button className='btn btn--small btn--green'>Save settings</button>
             </div>
           </form>
         </div>
-        <div class='line'>&nbsp;</div>
-        <div class='user-view__form-container'>
-          <h2 class='heading-secondary ma-bt-md'>Password change</h2>
-          <form class='form form-user-password'>
+        <div className='line'>&nbsp;</div>
+        <div className='user-view__form-container'>
+          <h2 className='heading-secondary ma-bt-md'>Password change</h2>
+          <form className='form form-user-password'>
             <FormRow
-              htmlFor='password-current'
+              name='password-current'
               type='password'
               placeholder='••••••••'
               text='Current password'
               minlength='8'
             />
             <FormRow
-              htmlFor='password'
+              name='password'
               type='password'
               placeholder='••••••••'
               text='New password'
@@ -77,14 +79,14 @@ const Profile = () => {
             />
             <FormRow
               className='ma-bt-lg'
-              htmlFor='password-confirm'
+              name='password-confirm'
               type='password'
               placeholder='••••••••'
               text='Confirm password'
               minlength='8'
             />
-            <div class='form__group right'>
-              <button class='btn btn--small btn--green btn--save-password'>Save password</button>
+            <div className='form__group right'>
+              <button className='btn btn--small btn--green btn--save-password'>Save password</button>
             </div>
           </form>
         </div>

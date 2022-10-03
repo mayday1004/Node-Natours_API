@@ -1,21 +1,13 @@
 import React, { useReducer, useContext } from 'react';
-import Cookies from 'js-cookie';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import reducer from './reducer';
-import {
-  DISPLAY_ALERT,
-  CLEAR_ALERT,
-  SETUP_USER_BEGIN,
-  SETUP_USER_SUCCESS,
-  SETUP_USER_ERROR,
-  LOGOUT_USER,
-} from './action';
+import { CLEAR_ALERT, SETUP_USER_BEGIN, SETUP_USER_SUCCESS, SETUP_USER_ERROR, LOGOUT_USER } from './action';
 
 const token = Cookies.get('token');
 const user = Cookies.get('user');
 
 const initialState = {
-  //USER
   isLoading: false,
   showAlert: false,
   alertText: '',
@@ -30,28 +22,11 @@ const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const authFetch = axios.create({
-    baseURL: '/api/v1/users',
+    baseURL: '/api/v1',
     headers: {
       Authorization: `Bearer ${state.token}`,
     },
   });
-  //   // axios提供的中間件，想要送出請求前做什麼就用interceptors.request
-  //   authFetch.interceptors.response.use(
-  //     response => {
-  //       return response;
-  //     },
-  //     error => {
-  //       if (error.response.status === 401) {
-  //         logoutUser();
-  //       }
-  //       return Promise.reject(error.response);
-  //     }
-  //   );
-
-  const displayAlert = () => {
-    dispatch({ type: DISPLAY_ALERT });
-    clearAlert();
-  };
 
   const clearAlert = () => {
     setTimeout(() => {
@@ -61,7 +36,6 @@ const AppProvider = ({ children }) => {
     }, 3000);
   };
 
-  //USER
   const addUserToCookie = ({ user, token }) => {
     Cookies.set('token', token, { expires: 1 });
     Cookies.set('user', JSON.stringify(user), {
@@ -76,7 +50,8 @@ const AppProvider = ({ children }) => {
   const setupUser = async ({ currentUser, endPoint, alertText }) => {
     dispatch({ type: SETUP_USER_BEGIN });
     try {
-      const { data } = await authFetch.post(`/${endPoint}`, currentUser);
+      const { data } = await authFetch.post(`/users/${endPoint}`, currentUser);
+      console.log(data);
       const { user, token } = data;
       dispatch({
         type: SETUP_USER_SUCCESS,
@@ -86,14 +61,15 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: SETUP_USER_ERROR,
-        payload: { message: error.data.message },
+        payload: { message: error.response.data.message },
       });
     }
     clearAlert();
   };
+
   const logoutUser = async () => {
     dispatch({ type: LOGOUT_USER });
-    await authFetch.get('/logout');
+    await authFetch('/users/logout');
     removeUserFromCookie();
   };
 
@@ -101,7 +77,7 @@ const AppProvider = ({ children }) => {
     <AppContext.Provider
       value={{
         ...state,
-        displayAlert,
+        clearAlert,
         setupUser,
         logoutUser,
       }}
@@ -111,9 +87,8 @@ const AppProvider = ({ children }) => {
   );
 };
 
-// make sure use
-const useAppConsumer = () => {
+const useAppContext = () => {
   return useContext(AppContext);
 };
 
-export { AppProvider, initialState, useAppConsumer };
+export { AppProvider, initialState, useAppContext };

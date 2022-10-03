@@ -1,18 +1,8 @@
-import {
-  DISPLAY_ALERT,
-  CLEAR_ALERT,
-  SETUP_USER_BEGIN,
-  SETUP_USER_SUCCESS,
-  SETUP_USER_ERROR,
-  LOGOUT_USER,
-} from './action';
+import { CLEAR_ALERT, SETUP_USER_BEGIN, SETUP_USER_SUCCESS, SETUP_USER_ERROR, LOGOUT_USER } from './action';
 
 import { initialState } from './appContext';
 
 const reducer = (state, action) => {
-  if (action.type === DISPLAY_ALERT) {
-    return { ...state, showAlert: true, alertType: 'danger', alertText: 'Please provide all values!' };
-  }
   if (action.type === CLEAR_ALERT) {
     return {
       ...state,
@@ -21,6 +11,7 @@ const reducer = (state, action) => {
       alertText: '',
     };
   }
+
   if (action.type === SETUP_USER_BEGIN) {
     return { ...state, isLoading: true };
   }
@@ -40,10 +31,11 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       showAlert: true,
-      alertType: 'danger',
+      alertType: 'error',
       alertText: action.payload.message,
     };
   }
+
   if (action.type === LOGOUT_USER) {
     return {
       ...initialState,
@@ -51,7 +43,7 @@ const reducer = (state, action) => {
       token: null,
     };
   }
-  throw new Error(`no such action :${action.type}`);
+  throw new Error(`no such action : ${action.type}`);
 };
 
 export default reducer;

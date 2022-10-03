@@ -12,7 +12,7 @@ exports.getAllUsers = trycatch(async (req, res) => {
   res.status(200).json({
     status: 'success',
     results: users.length,
-    data: users,
+    user: users,
   });
 });
 
@@ -23,7 +23,7 @@ exports.getUser = trycatch(async (req, res, next) => {
   }
   res.status(200).json({
     status: 'success',
-    data: user,
+    user: user,
   });
 });
 
@@ -38,7 +38,7 @@ exports.createUser = trycatch(async (req, res, next) => {
 
     res.status(201).json({
       status: 'success',
-      data: newUser.toJSON(),
+      user: newUser.toJSON(),
     });
   }
 });
@@ -53,7 +53,7 @@ exports.updateUser = trycatch(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: user,
+    user: user,
   });
 });
 
@@ -66,6 +66,6 @@ exports.deleteUser = trycatch(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: null,
+    user: null,
   });
 });

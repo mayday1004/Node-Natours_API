@@ -6,31 +6,6 @@ const trycatch = require('../utils/trycatch');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/nodemailer');
 
-const signToken = function (id) {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-const sendTokenWithCookies = function (req, res, user, statusCode) {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-  }
-  res.cookie('jwt', token, cookieOptions);
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: user.toJSON(),
-  });
-};
-
 exports.signup = trycatch(async (req, res, next) => {
   // 先確認email有沒有被註冊過
   const isExistAc = await User.findOne({ email: req.body.email });
@@ -47,13 +22,13 @@ exports.signup = trycatch(async (req, res, next) => {
     });
 
     // 註冊時生成JWT令牌，用作未來驗證身分用
-    sendTokenWithCookies(req, res, newUser, 201);
-    // const token = signToken(newUser._id);
-    // res.status(201).json({
-    //   status: 'success',
-    //   token,
-    //   data: newUser.toJSON(),
-    // });
+
+    const token = newUser.signToken();
+    res.status(201).json({
+      status: 'success',
+      token,
+      user: newUser.toJSON(),
+    });
   }
 });
 
@@ -73,12 +48,12 @@ exports.login = trycatch(async (req, res, next) => {
   }
 
   //? 3)如果都正確發送令牌
-  sendTokenWithCookies(req, res, user, 200);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
+  const token = user.signToken();
+  res.status(200).json({
+    status: 'success',
+    token,
+    user: user.toJSON(),
+  });
 });
 
 exports.protect = trycatch(async (req, res, next) => {
@@ -87,6 +62,10 @@ exports.protect = trycatch(async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
+  // } else if (req.cookies.token) {
+  //   token = req.cookies.token;
+  // }
+  console.log(req.cookies);
 
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));
@@ -178,13 +157,20 @@ exports.resetPassword = trycatch(async (req, res, next) => {
   await user.save();
   // 3) Update changedPasswordAt property before user.save
   // 4) Log the user in, send JWT
-  sendTokenWithCookies(req, res, user, 200);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
+
+  const token = user.signToken();
+  res.status(200).json({
+    status: 'success',
+    token,
+    user: user.toJSON(),
+  });
 });
+
+exports.logout = (req, res) => {
+  res.clearCookie('token');
+  req.headers.authorization.split(' ')[1] = '';
+  res.status(200).json({ status: 'success' });
+};
 
 // 用戶自己更新自己的密碼
 exports.updatePassword = trycatch(async (req, res, next) => {
@@ -203,10 +189,10 @@ exports.updatePassword = trycatch(async (req, res, next) => {
   // User.findByIdAndUpdate will NOT work as intended!
 
   // 4) Log user in, send JWT
-  sendTokenWithCookies(req, res, user, 200);
-  // const token = signToken(user._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
+  const token = user.signToken();
+  res.status(200).json({
+    status: 'success',
+    token,
+    user: user.toJSON(),
+  });
 });

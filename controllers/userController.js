@@ -3,31 +3,6 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const trycatch = require('../utils/trycatch');
 
-const signToken = function (id) {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-const sendTokenWithCookies = function (req, res, user, statusCode) {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-  }
-  res.cookie('jwt', token, cookieOptions);
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: user.toJSON(),
-  });
-};
-
 const filterObj = (reqBody, ...allowesFields) => {
   const reqBodyCopy = {};
   Object.keys(reqBody).forEach(el => {
@@ -54,13 +29,12 @@ exports.updateMe = trycatch(async (req, res, next) => {
     runValidators: true,
   }).select('-__v');
 
-  sendTokenWithCookies(req, res, updatedUser, 200);
-  // const token = signToken(updatedUser._id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  //   data: updatedUser,
-  // });
+  const token = updatedUser.signToken();
+  res.status(200).json({
+    status: 'success',
+    token,
+    user: updatedUser,
+  });
 });
 
 // 實際上並沒有要真的將帳號從資料庫移除，而是將帳戶設置成非活動狀態，這樣能在未來的時間點重新激活帳戶
@@ -70,7 +44,7 @@ exports.updateMe = trycatch(async (req, res, next) => {
 
 //   res.status(204).json({
 //     status: 'success',
-//     data: null,
+//     user: null,
 //   });
 // });
 
@@ -79,6 +53,6 @@ exports.deleteMe = trycatch(async (req, res) => {
 
   res.status(204).json({
     status: 'success',
-    data: null,
+    user: null,
   });
 });

@@ -515,7 +515,7 @@ body {
 }
 
 .marker {
-  background-image: url('./assets/images/pin.png');
+  background-image: url('../public/images/pin.png');
   background-size: cover;
   width: 32px;
   height: 40px;

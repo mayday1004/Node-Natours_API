@@ -1,18 +1,21 @@
 import React from 'react';
 
-const FormRow = ({ htmlFor, type, placeholder, text, minlength }) => {
+const FormRow = ({ name, type, placeholder, text, minLength, handleChange, value }) => {
   return (
     <div className='form__group'>
-      <label className='form__label' htmlFor={htmlFor}>
+      <label className='form__label' htmlFor={name}>
         {text}
       </label>
       <input
         className='form__input'
-        id={htmlFor}
+        id={name}
+        name={name}
         type={type}
         placeholder={placeholder}
+        minLength={minLength}
+        value={value}
+        onChange={handleChange}
         required
-        minlength={minlength}
       />
     </div>
   );

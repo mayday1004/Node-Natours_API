@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Login, Logout } from './index';
 
-import logoWhite from '../assets/images/logo-white.png';
+import { useAppContext } from '../contexts/appContext';
 
 const Navbar = () => {
+  const { user } = useAppContext();
   return (
     <header className='header'>
       <nav className='nav nav--tours'>
@@ -12,16 +14,9 @@ const Navbar = () => {
         </Link>
       </nav>
       <div className='header__logo'>
-        <img src={logoWhite} alt='Natours logo' />
+        <img src='images/logo-white.png' alt='Natours logo' />
       </div>
-      <nav className='nav nav--user'>
-        <Link className='nav__el' to='/login'>
-          Log in
-        </Link>
-        <Link className='nav__el nav__el--cta' to='/signup'>
-          Sign up
-        </Link>
-      </nav>
+      {user ? <Login /> : <Logout />}
     </header>
   );
 };
