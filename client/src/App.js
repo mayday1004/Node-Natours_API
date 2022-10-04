@@ -1,16 +1,30 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AllTours, TourInfo, Login, Register, Profile, Error, ShareLayout, ProtectRoute } from './pages';
+import { useAppContext } from './contexts/appContext';
 
 const App = () => {
+  const { getAllTours } = useAppContext();
+
+  useEffect(() => {
+    getAllTours();
+    // eslint-disable-next-line
+  }, []);
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<ShareLayout />}>
           <Route index element={<AllTours />} />
-          <Route path='/tour/:slugify' element={<TourInfo />} />
           <Route path='signup' element={<Register />} />
           <Route path='login' element={<Login />} />
+          <Route
+            path='/tour/:slug'
+            element={
+              <ProtectRoute>
+                <TourInfo />
+              </ProtectRoute>
+            }
+          />
           <Route
             path='me'
             element={

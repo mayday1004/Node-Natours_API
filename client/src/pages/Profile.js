@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AiOutlineSetting, AiOutlineStar, AiOutlineCreditCard } from 'react-icons/ai';
 import { RiBriefcase3Line } from 'react-icons/ri';
@@ -6,34 +6,27 @@ import { FormRow } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const Profile = () => {
-  const { user, updateUser } = useAppContext();
-
-  const initialState = {
-    name: user.name,
-    email: user.email,
-    passwordCurrent: '',
-    newPassword: '',
-    newPasswordConfirm: '',
-  };
-  const [values, setValues] = useState(initialState);
-
-  const handleChange = e => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-  };
+  const { isLoading, user, updateUser } = useAppContext();
+  const [name, setName] = useState(user?.name);
+  const [email, setEmail] = useState(user?.email);
+  const [passwordCurrent, setPasswordCurrent] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   const onSubmitACSetting = e => {
     e.preventDefault();
-    const { name, email } = values;
     const currentUser = { name, email };
-    updateUser({ currentUser, endPoint: 'updateMe', alertText: 'Account Setting Success!' });
+
+    updateUser({ currentUser, endPoint: 'updateMe', alertText: 'Account setting Success!' });
   };
 
   const onSubmitPasswordChange = e => {
     e.preventDefault();
-    const { passwordCurrent, newPassword, newPasswordConfirm } = values;
     const currentUser = { passwordCurrent, newPassword, newPasswordConfirm };
-    updateUser({ currentUser, endPoint: 'updateMyPassword', alertText: 'Password Change Success!' });
-    setValues({ ...values, passwordCurrent: '', newPassword: '', newPasswordConfirm: '' });
+    updateUser({ currentUser, endPoint: 'updateMyPassword', alertText: 'Password change Success!' });
+    setPasswordCurrent('');
+    setNewPassword('');
+    setNewPasswordConfirm('');
   };
 
   return (
@@ -75,8 +68,8 @@ const Profile = () => {
               type='text'
               required='required'
               text='Your name'
-              value={user.name}
-              handleChange={handleChange}
+              value={name}
+              handleChange={e => setName(e.target.value)}
             />
             <FormRow
               className='ma-bt-md'
@@ -84,16 +77,18 @@ const Profile = () => {
               type='email'
               placeholder='you@example.io'
               text='Email address'
-              value={user.email}
-              handleChange={handleChange}
+              value={email}
+              handleChange={e => setEmail(e.target.value)}
             />
             <div className='form__group form__photo-upload'>
-              <img className='form__user-photo' src={`images/users/${user.photo}`} alt='User' />
+              <img className='form__user-photo' src={`images/users/${user?.photo}`} alt='User' />
               <input className='form__upload' type='file' accept='image/*' id='photo' name='photo' />
               <label htmlFor='photo'>Choose new photo</label>
             </div>
             <div className='form__group right'>
-              <button className='btn btn--small btn--green'>Save settings</button>
+              <button className='btn btn--small btn--green' disabled={isLoading}>
+                {isLoading ? 'Please Wait...' : 'Save settings'}
+              </button>
             </div>
           </form>
         </div>
@@ -107,8 +102,8 @@ const Profile = () => {
               placeholder='••••••••'
               text='Current password'
               minlength='8'
-              value={values.passwordCurrent}
-              handleChange={handleChange}
+              value={passwordCurrent}
+              handleChange={e => setPasswordCurrent(e.target.value)}
             />
             <FormRow
               name='newPassword'
@@ -116,8 +111,8 @@ const Profile = () => {
               placeholder='••••••••'
               text='New password'
               minlength='8'
-              value={values.newPassword}
-              handleChange={handleChange}
+              value={newPassword}
+              handleChange={e => setNewPassword(e.target.value)}
             />
             <FormRow
               className='ma-bt-lg'
@@ -126,11 +121,13 @@ const Profile = () => {
               placeholder='••••••••'
               text='Confirm password'
               minlength='8'
-              value={values.newPasswordConfirm}
-              handleChange={handleChange}
+              value={newPasswordConfirm}
+              handleChange={e => setNewPasswordConfirm(e.target.value)}
             />
             <div className='form__group right'>
-              <button className='btn btn--small btn--green btn--save-password'>Save password</button>
+              <button className='btn btn--small btn--green btn--save-password' disabled={isLoading}>
+                {isLoading ? 'Please Wait...' : 'Save password'}
+              </button>
             </div>
           </form>
         </div>

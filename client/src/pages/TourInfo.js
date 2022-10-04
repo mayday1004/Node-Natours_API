@@ -1,29 +1,48 @@
-import React from 'react';
-import { ReviewCard } from '../components';
+import { useEffect } from 'react';
+import moment from 'moment';
+import { AiOutlineClockCircle, AiOutlineCalendar, AiOutlineStar } from 'react-icons/ai';
+import { CgPin } from 'react-icons/cg';
+import { BiTrendingUp, BiUser } from 'react-icons/bi';
+import { TourGuide, ReviewCard, PictureBox, MapLeaflet } from '../components';
+import { useAppContext } from '../contexts/appContext';
 
 const TourInfo = () => {
+  const { tours, getReviews, reviews } = useAppContext();
+
+  const slug = window.location.pathname.split('/')[2];
+  const index = tours.findIndex(tour => {
+    return tour.slug === slug;
+  });
+
+  let tour = tours[index];
+  let date = moment(tour.startDates[0]);
+  date = date.format('MMM YYYY');
+
+  useEffect(() => {
+    getReviews(tour._id);
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <>
       <section className='section-header'>
+        <div className='header__hero'>
+          <div className='header__hero-overlay'>&nbsp;</div>
+          <img src={`../images/tours/${tour.imageCover}`} alt='' className='header__hero-img' />
+        </div>
         <div className='heading-box'>
           <h1 className='heading-primary'>
-            <span>
-              The Park <br />
-              Camper Tour
-            </span>
+            <span>{tour.name}</span>
           </h1>
           <div className='heading-box__group'>
             <div className='heading-box__detail'>
-              <svg className='heading-box__icon'>
-                <use xlinkHref='img/icons.svg#icon-clock'></use>
-              </svg>
-              <span className='heading-box__text'>10 days</span>
+              <AiOutlineClockCircle className='heading-box__icon' />
+              <span className='heading-box__text'>{tour.duration} days</span>
             </div>
             <div className='heading-box__detail'>
-              <svg className='heading-box__icon'>
-                <use xlinkHref='img/icons.svg#icon-map-pin'></use>
-              </svg>
-              <span className='heading-box__text'>Las Vegas, USA</span>
+              <CgPin className='heading-box__icon' />
+
+              <span className='heading-box__text'>{tour.startLocation.description}</span>
             </div>
           </div>
         </div>
@@ -34,112 +53,70 @@ const TourInfo = () => {
             <div className='overview-box__group'>
               <h2 className='heading-secondary ma-bt-lg'>Quick facts</h2>
               <div className='overview-box__detail'>
-                <svg className='overview-box__icon'>
-                  <use xlinkHref='img/icons.svg#icon-calendar'></use>
-                </svg>
+                <AiOutlineCalendar className='overview-box__icon' />
                 <span className='overview-box__label'>Next date</span>
-                <span className='overview-box__text'>August 2021</span>
+                <span className='overview-box__text'>{date}</span>
               </div>
               <div className='overview-box__detail'>
-                <svg className='overview-box__icon'>
-                  <use xlinkHref='img/icons.svg#icon-trending-up'></use>
-                </svg>
+                <BiTrendingUp className='overview-box__icon' />
                 <span className='overview-box__label'>Difficulty</span>
-                <span className='overview-box__text'>Medium</span>
+                <span className='overview-box__text'>{tour.difficulty}</span>
               </div>
               <div className='overview-box__detail'>
-                <svg className='overview-box__icon'>
-                  <use xlinkHref='img/icons.svg#icon-user'></use>
-                </svg>
+                <BiUser className='overview-box__icon' />
                 <span className='overview-box__label'>Participants</span>
-                <span className='overview-box__text'>10 people</span>
+                <span className='overview-box__text'>{tour.maxGroupSize} people</span>
               </div>
               <div className='overview-box__detail'>
-                <svg className='overview-box__icon'>
-                  <use xlinkHref='img/icons.svg#icon-star'></use>
-                </svg>
+                <AiOutlineStar className='overview-box__icon' />
                 <span className='overview-box__label'>Rating</span>
-                <span className='overview-box__text'>4.9 / 5</span>
+                <span className='overview-box__text'>{tour.ratingsAverage} / 5</span>
               </div>
             </div>
 
             <div className='overview-box__group'>
               <h2 className='heading-secondary ma-bt-lg'>Your tour guides</h2>
-
-              <div className='overview-box__detail'>
-                <img src='img/users/user-19.jpg' alt='Lead guide' className='overview-box__img' />
-                <span className='overview-box__label'>Lead guide</span>
-                <span className='overview-box__text'>Steven Miller</span>
-              </div>
-              <div className='overview-box__detail'>
-                <img src='img/users/user-18.jpg' alt='Tour guide' className='overview-box__img' />
-                <span className='overview-box__label'>Tour guide</span>
-                <span className='overview-box__text'>Lisa Brown</span>
-              </div>
-              <div className='overview-box__detail'>
-                <img src='img/users/user-17.jpg' alt='Intern' className='overview-box__img' />
-                <span className='overview-box__label'>Intern</span>
-                <span className='overview-box__text'>Max Smith</span>
-              </div>
+              {tour.guides.map((guide, i) => {
+                return <TourGuide key={i} {...guide} />;
+              })}
             </div>
           </div>
         </div>
 
         <div className='description-box'>
           <h2 className='heading-secondary ma-bt-lg'>About the park camper tour</h2>
-          <p className='description__text'>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-            esse cillum dolore eu fugiat nulla pariatur.
-          </p>
-          <p className='description__text'>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum!
-          </p>
+          <p className='description__text'>{tour.description.split('\n')[0]}</p>
+          <p className='description__text'>{tour.description.split('\n')[1]}</p>
         </div>
       </section>
       <section className='section-pictures'>
-        <div className='picture-box'>
-          <img
-            className='picture-box__img picture-box__img--1'
-            src='img/tour-5-1.jpg'
-            alt='The Park Camper Tour 1'
-          />
-        </div>
-        <div className='picture-box'>
-          <img
-            className='picture-box__img picture-box__img--2'
-            src='img/tour-5-2.jpg'
-            alt='The Park Camper Tour 1'
-          />
-        </div>
-        <div className='picture-box'>
-          <img
-            className='picture-box__img picture-box__img--3'
-            src='img/tour-5-3.jpg'
-            alt='The Park Camper Tour 1'
-          />
-        </div>
+        {tour.images.map((image, i) => {
+          return <PictureBox key={i} image={image} i={i} />;
+        })}
       </section>
-      {/* MAPBOX */}
+      <section className='section-map'>
+        <MapLeaflet {...tour.locations} />
+      </section>
       <section className='section-reviews'>
         <div className='reviews'>
-          <ReviewCard />
+          {reviews.map(review => {
+            return <ReviewCard key={review._id} {...review} />;
+          })}
         </div>
       </section>
       <section className='section-cta'>
         <div className='cta'>
           <div className='cta__img cta__img--logo'>
-            <img src='img/logo-white.png' alt='Natours logo' className='' />
+            <img src='../images/logo-white.png' alt='Natours logo' className='' />
           </div>
-          <img src='img/tour-5-2.jpg' alt='' className='cta__img cta__img--1' />
-          <img src='img/tour-5-1.jpg' alt='' className='cta__img cta__img--2' />
+          <img src={`../images/tours/${tour.images[1]}`} alt='' className='cta__img cta__img--1' />
+          <img src={`../images/tours/${tour.images[2]}`} alt='' className='cta__img cta__img--2' />
 
           <div className='cta__content'>
             <h2 className='heading-secondary'>What are you waiting for?</h2>
-            <p className='cta__text'>10 days. 1 adventure. Infinite memories. Make it yours today!</p>
+            <p className='cta__text'>
+              {tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
+            </p>
             <button className='btn btn--green span-all-rows'>Book tour now!</button>
           </div>
         </div>

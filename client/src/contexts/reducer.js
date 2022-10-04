@@ -1,5 +1,9 @@
 import {
   CLEAR_ALERT,
+  GET_ALLTOURS_BEGIN,
+  GET_ALLTOURS_SUCCESS,
+  GET_REVIEWS_BEGIN,
+  GET_REVIEWS_SUCCESS,
   SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
@@ -18,6 +22,28 @@ const reducer = (state, action) => {
       showAlert: false,
       alertType: '',
       alertText: '',
+    };
+  }
+
+  if (action.type === GET_ALLTOURS_BEGIN) {
+    return { ...state, isLoading: true, showAlert: false };
+  }
+  if (action.type === GET_ALLTOURS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      tours: action.payload.tour,
+    };
+  }
+
+  if (action.type === GET_REVIEWS_BEGIN) {
+    return { ...state, isLoading: true, showAlert: false };
+  }
+  if (action.type === GET_REVIEWS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      reviews: action.payload.review,
     };
   }
 
@@ -48,6 +74,7 @@ const reducer = (state, action) => {
   if (action.type === LOGOUT_USER) {
     return {
       ...initialState,
+      showAlert: false,
       user: null,
       token: null,
     };

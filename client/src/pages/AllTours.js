@@ -1,13 +1,13 @@
-import React from 'react';
 import { TourCard } from '../components';
+import { useAppContext } from '../contexts/appContext';
 
 const AllTours = () => {
+  const { tours } = useAppContext();
   return (
     <div className='card-container'>
-      <TourCard />
-      <TourCard />
-      <TourCard />
-      <TourCard />
+      {tours.map(tour => {
+        return <TourCard key={tour._id} {...tour} />;
+      })}
     </div>
   );
 };

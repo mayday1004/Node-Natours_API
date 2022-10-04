@@ -59,10 +59,10 @@ exports.login = trycatch(async (req, res, next) => {
 exports.protect = trycatch(async (req, res, next) => {
   let token;
   // 確認有沒有獲得JWT令牌
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.token) {
+  if (req.cookies.token) {
     token = req.cookies.token;
+  } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
   }
 
   if (!token) {
@@ -165,9 +165,8 @@ exports.resetPassword = trycatch(async (req, res, next) => {
 });
 
 exports.logout = (req, res) => {
-  res.clearCookie('token');
-  req.headers.authorization.split(' ')[1] = '';
-  res.status(200).json({ status: 'success' });
+  req.user = null;
+  res.status(200).json({ status: 'success', token: null, user: null });
 };
 
 // 用戶自己更新自己的密碼

@@ -8,7 +8,6 @@ const FormRow = ({ name, type, placeholder, text, minLength, handleChange, value
       </label>
       <input
         className='form__input'
-        id={name}
         name={name}
         type={type}
         placeholder={placeholder}

@@ -4,6 +4,10 @@ import Cookies from 'js-cookie';
 import reducer from './reducer';
 import {
   CLEAR_ALERT,
+  GET_ALLTOURS_BEGIN,
+  GET_ALLTOURS_SUCCESS,
+  GET_REVIEWS_BEGIN,
+  GET_REVIEWS_SUCCESS,
   SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
@@ -23,6 +27,8 @@ const initialState = {
   alertType: '',
   user: user ? JSON.parse(user) : null,
   token: token ? token : null,
+  tours: [],
+  reviews: [],
 };
 
 const AppContext = React.createContext();
@@ -37,6 +43,18 @@ const AppProvider = ({ children }) => {
     },
   });
 
+  authFetch.interceptors.response.use(
+    response => {
+      return response;
+    },
+    error => {
+      if (error.response.status === 401) {
+        logoutUser();
+      }
+      return Promise.reject(error.response);
+    }
+  );
+
   const clearAlert = () => {
     setTimeout(() => {
       dispatch({
@@ -45,15 +63,40 @@ const AppProvider = ({ children }) => {
     }, 3000);
   };
 
+  const getAllTours = async () => {
+    dispatch({ type: GET_ALLTOURS_BEGIN });
+    try {
+      const { data } = await authFetch('/tours');
+      const { tour } = data;
+
+      dispatch({
+        type: GET_ALLTOURS_SUCCESS,
+        payload: { tour },
+      });
+    } catch (error) {
+      // logoutUser();
+    }
+    clearAlert();
+  };
+
+  const getReviews = async endpoint => {
+    dispatch({ type: GET_REVIEWS_BEGIN });
+    try {
+      const { data } = await authFetch(`/tours/${endpoint}/reviews`);
+      const { review } = data;
+      console.log(review);
+      dispatch({ type: GET_REVIEWS_SUCCESS, payload: { review } });
+    } catch (error) {
+      // logoutUser();
+    }
+    clearAlert();
+  };
+
   const addUserToCookie = ({ user, token }) => {
     Cookies.set('token', token, { expires: 1 });
     Cookies.set('user', JSON.stringify(user), {
       expires: 1,
     });
-  };
-  const removeUserFromCookie = () => {
-    Cookies.remove('token', { path: '' });
-    Cookies.remove('user', { path: '' });
   };
 
   const setupUser = async ({ currentUser, endPoint, alertText }) => {
@@ -69,16 +112,17 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: SETUP_USER_ERROR,
-        payload: { message: error.response.data.message },
+        payload: { message: error.data.message },
       });
     }
     clearAlert();
   };
 
   const logoutUser = async () => {
+    const { data } = await authFetch('/users/logout');
+    const { user, token } = data;
+    addUserToCookie({ user, token });
     dispatch({ type: LOGOUT_USER });
-    await authFetch('/users/logout');
-    removeUserFromCookie();
   };
 
   const updateUser = async ({ currentUser, endPoint, alertText }) => {
@@ -92,10 +136,14 @@ const AppProvider = ({ children }) => {
       });
       addUserToCookie({ user, token });
     } catch (error) {
-      dispatch({
-        type: UPDATE_USER_ERROR,
-        payload: { message: error.response.data.message },
-      });
+      console.log(error);
+      if (error.status !== 401) {
+        //如果是401錯誤會被axios攔截器處理
+        dispatch({
+          type: UPDATE_USER_ERROR,
+          payload: { message: error.data.message },
+        });
+      }
     }
     clearAlert();
   };
@@ -105,6 +153,8 @@ const AppProvider = ({ children }) => {
       value={{
         ...state,
         clearAlert,
+        getAllTours,
+        getReviews,
         setupUser,
         logoutUser,
         updateUser,

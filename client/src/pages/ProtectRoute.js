@@ -5,7 +5,7 @@ import { useAppContext } from '../contexts/appContext';
 const ProtectRoute = ({ children }) => {
   const { user, token, logoutUser } = useAppContext();
   const cookie = Cookies.get('token');
-  if ((!cookie && token) || (cookie && token !== cookie)) {
+  if ((!cookie && token) || cookie !== token) {
     logoutUser();
   }
 
