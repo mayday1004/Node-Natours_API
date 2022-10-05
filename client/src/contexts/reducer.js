@@ -2,6 +2,8 @@ import {
   CLEAR_ALERT,
   GET_ALLTOURS_BEGIN,
   GET_ALLTOURS_SUCCESS,
+  GET_TOUR_BEGIN,
+  GET_TOUR_SUCCESS,
   GET_REVIEWS_BEGIN,
   GET_REVIEWS_SUCCESS,
   SETUP_USER_BEGIN,
@@ -26,13 +28,24 @@ const reducer = (state, action) => {
   }
 
   if (action.type === GET_ALLTOURS_BEGIN) {
-    return { ...state, isLoading: true, showAlert: false };
+    return { ...state, isLoading: true };
   }
   if (action.type === GET_ALLTOURS_SUCCESS) {
     return {
       ...state,
       isLoading: false,
       tours: action.payload.tour,
+    };
+  }
+
+  if (action.type === GET_TOUR_BEGIN) {
+    return { ...state, isLoading: true };
+  }
+  if (action.type === GET_TOUR_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      tour: action.payload.tour,
     };
   }
 

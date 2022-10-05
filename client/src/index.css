@@ -328,6 +328,14 @@ body {
     margin-bottom: 1.5rem;
   }
 }
+.loading {
+  color: #20bf6b;
+  font-size: 2rem;
+  height: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .section-header {
   position: relative;

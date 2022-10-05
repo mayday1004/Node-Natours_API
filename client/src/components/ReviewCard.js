@@ -13,8 +13,8 @@ const ReviewCard = ({ ...review }) => {
       </div>
       <p className='reviews__text'>{review.review}</p>
       <div className='reviews__rating'>
-        {Array.from({ length: review.rating }).map(() => {
-          return <AiFillStar className='reviews__star reviews__star--active' />;
+        {Array.from({ length: review.rating }).map((_, i) => {
+          return <AiFillStar key={i} className='reviews__star reviews__star--active' />;
         })}
       </div>
     </div>

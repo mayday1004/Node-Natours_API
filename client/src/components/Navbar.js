@@ -14,7 +14,7 @@ const Navbar = () => {
         </Link>
       </nav>
       <div className='header__logo'>
-        <img src='images/logo-white.png' alt='Natours logo' />
+        <img src={'../images/logo-white.png'} alt='Natours logo' />
       </div>
       {user ? <Login /> : <Logout />}
     </header>

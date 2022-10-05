@@ -6,6 +6,8 @@ import {
   CLEAR_ALERT,
   GET_ALLTOURS_BEGIN,
   GET_ALLTOURS_SUCCESS,
+  GET_TOUR_BEGIN,
+  GET_TOUR_SUCCESS,
   GET_REVIEWS_BEGIN,
   GET_REVIEWS_SUCCESS,
   SETUP_USER_BEGIN,
@@ -28,6 +30,7 @@ const initialState = {
   user: user ? JSON.parse(user) : null,
   token: token ? token : null,
   tours: [],
+  tour: '',
   reviews: [],
 };
 
@@ -76,7 +79,21 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       // logoutUser();
     }
-    clearAlert();
+  };
+
+  const getTour = async endpoint => {
+    dispatch({ type: GET_TOUR_BEGIN });
+    try {
+      const { data } = await authFetch(`/tours/${endpoint}`);
+      const { tour } = data;
+
+      dispatch({
+        type: GET_TOUR_SUCCESS,
+        payload: { tour },
+      });
+    } catch (error) {
+      // logoutUser();
+    }
   };
 
   const getReviews = async endpoint => {
@@ -84,12 +101,10 @@ const AppProvider = ({ children }) => {
     try {
       const { data } = await authFetch(`/tours/${endpoint}/reviews`);
       const { review } = data;
-      console.log(review);
       dispatch({ type: GET_REVIEWS_SUCCESS, payload: { review } });
     } catch (error) {
       // logoutUser();
     }
-    clearAlert();
   };
 
   const addUserToCookie = ({ user, token }) => {
@@ -154,6 +169,7 @@ const AppProvider = ({ children }) => {
         ...state,
         clearAlert,
         getAllTours,
+        getTour,
         getReviews,
         setupUser,
         logoutUser,

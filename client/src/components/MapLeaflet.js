@@ -16,7 +16,6 @@ const MapLeaflet = ({ ...locations }) => {
     location.push(loc);
     points.push([loc.coordinates[1], loc.coordinates[0]]);
   });
-  console.log(location);
 
   return (
     <MapContainer id='map' center={points[1]} zoom={7} scrollWheelZoom={true}>
@@ -24,9 +23,9 @@ const MapLeaflet = ({ ...locations }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
       />
-      {location.map(loc => {
+      {location.map((loc, i) => {
         return (
-          <Marker position={[loc.coordinates[1], loc.coordinates[0]]} icon={greenIcon}>
+          <Marker key={i} position={[loc.coordinates[1], loc.coordinates[0]]} icon={greenIcon}>
             <Popup>{`Day ${loc.day}: ${loc.description}`}</Popup>
           </Marker>
         );

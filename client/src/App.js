@@ -17,14 +17,7 @@ const App = () => {
           <Route index element={<AllTours />} />
           <Route path='signup' element={<Register />} />
           <Route path='login' element={<Login />} />
-          <Route
-            path='/tour/:slug'
-            element={
-              <ProtectRoute>
-                <TourInfo />
-              </ProtectRoute>
-            }
-          />
+          <Route path='/tour/:id' element={<TourInfo />} />
           <Route
             path='me'
             element={

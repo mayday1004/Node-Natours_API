@@ -48,7 +48,7 @@ const TourCard = ({ ...tour }) => {
           <span className='card__footer-value'>{tour.ratingsAverage}</span>
           <span className='card__footer-text'>{` rating (${tour.ratingsQuantity})`}</span>
         </p>
-        <Link className='btn btn--green btn--small' to={`/tour/${tour.slug}`}>
+        <Link className='btn btn--green btn--small' to={`/tour/${tour._id}`}>
           Details
         </Link>
       </div>
