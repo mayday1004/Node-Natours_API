@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 import { TourCard } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const AllTours = () => {
-  const { tours } = useAppContext();
+  const { getAllTours, tours } = useAppContext();
+
+  useEffect(() => {
+    getAllTours();
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <div className='card-container'>
       {tours.map(tour => {

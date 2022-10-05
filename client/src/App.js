@@ -1,15 +1,7 @@
-import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AllTours, TourInfo, Login, Register, Profile, Error, ShareLayout, ProtectRoute } from './pages';
-import { useAppContext } from './contexts/appContext';
 
 const App = () => {
-  const { getAllTours } = useAppContext();
-
-  useEffect(() => {
-    getAllTours();
-    // eslint-disable-next-line
-  }, []);
   return (
     <BrowserRouter>
       <Routes>

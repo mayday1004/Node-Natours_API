@@ -1,4 +1,5 @@
-const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const trycatch = require('../utils/trycatch');
@@ -13,6 +14,41 @@ const filterObj = (reqBody, ...allowesFields) => {
   return reqBodyCopy;
 };
 
+//因為用戶上傳的圖片不總是我們要的尺寸，所以先將用戶上傳的圖存緩存，等到sharp處理完圖片後才儲存
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+//上傳文件功能
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserPhoto = upload.single('photo');
+
+//修改上傳圖片的大小形狀
+exports.resizeUserPhoto = trycatch(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer) // 調用緩存的圖片
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    //路徑從根目錄開始算
+    .toFile(`client/public/images/users/${req.file.filename}`);
+
+  next();
+});
+
 // 用戶自己更新自己的資料
 exports.updateMe = trycatch(async (req, res, next) => {
   //即使在擁有前端之後，無論“updateMe”頁面中是否有更改密碼的選項，任何用戶仍然可以使用Postman嘗試更改我們不希望他們更改的值（例如密碼或角色）。
@@ -23,6 +59,8 @@ exports.updateMe = trycatch(async (req, res, next) => {
 
   // 2) 只允許用戶去更改非密碼以外的資訊，但我們不想讓用戶嘗試通過 Postman強制改寫role的種類，所以在這一步做一些過濾
   const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
+
   // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,

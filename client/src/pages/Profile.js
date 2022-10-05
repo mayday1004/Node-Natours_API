@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { AiOutlineSetting, AiOutlineStar, AiOutlineCreditCard } from 'react-icons/ai';
 import { RiBriefcase3Line } from 'react-icons/ri';
@@ -12,11 +13,14 @@ const Profile = () => {
   const [passwordCurrent, setPasswordCurrent] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [file, setFile] = useState();
 
   const onSubmitACSetting = e => {
     e.preventDefault();
-    const currentUser = { name, email };
-
+    const currentUser = new FormData();
+    currentUser.append('name', name);
+    currentUser.append('email', email);
+    currentUser.append('photo', file);
     updateUser({ currentUser, endPoint: 'updateMe', alertText: 'Account setting Success!' });
   };
 
@@ -27,6 +31,10 @@ const Profile = () => {
     setPasswordCurrent('');
     setNewPassword('');
     setNewPasswordConfirm('');
+  };
+
+  const onFileUpload = e => {
+    setFile(e.target.files[0]);
   };
 
   return (
@@ -82,7 +90,14 @@ const Profile = () => {
             />
             <div className='form__group form__photo-upload'>
               <img className='form__user-photo' src={`images/users/${user?.photo}`} alt='User' />
-              <input className='form__upload' type='file' accept='image/*' id='photo' name='photo' />
+              <input
+                className='form__upload'
+                type='file'
+                accept='image/*'
+                id='photo'
+                name='photo'
+                onChange={onFileUpload}
+              />
               <label htmlFor='photo'>Choose new photo</label>
             </div>
             <div className='form__group right'>

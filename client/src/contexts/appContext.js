@@ -143,8 +143,13 @@ const AppProvider = ({ children }) => {
   const updateUser = async ({ currentUser, endPoint, alertText }) => {
     dispatch({ type: UPDATE_USER_BEGIN });
     try {
-      const { data } = await authFetch.patch(`/users/${endPoint}`, currentUser);
+      const { data } = await authFetch.patch(`/users/${endPoint}`, currentUser, {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+      });
       const { user, token } = data;
+
       dispatch({
         type: UPDATE_USER_SUCCESS,
         payload: { user, token, alertText },

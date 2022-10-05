@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -34,6 +35,15 @@ const limiter = rateLimit({
 
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: '*',
+    methods: 'GET,POST,PATCH,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
 
 // 數據消毒，防止數據庫查詢注入
 app.use(mongoSanitize());
