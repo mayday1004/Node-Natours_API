@@ -13,6 +13,12 @@ import {
   UPDATE_USER_BEGIN,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
+  FORGOT_PASSWORD_BEGIN,
+  FORGOT_PASSWORD_SUCCESS,
+  FORGOT_PASSWORD_ERROR,
+  RESET_PASSWORD_BEGIN,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_ERROR,
 } from './action';
 
 import { initialState } from './appContext';
@@ -35,6 +41,7 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       tours: action.payload.tour,
+      submit: false,
     };
   }
 
@@ -50,7 +57,7 @@ const reducer = (state, action) => {
   }
 
   if (action.type === GET_REVIEWS_BEGIN) {
-    return { ...state, isLoading: true, showAlert: false };
+    return { ...state, isLoading: true };
   }
   if (action.type === GET_REVIEWS_SUCCESS) {
     return {
@@ -86,8 +93,7 @@ const reducer = (state, action) => {
 
   if (action.type === LOGOUT_USER) {
     return {
-      ...initialState,
-      showAlert: false,
+      ...state,
       user: null,
       token: null,
     };
@@ -114,6 +120,56 @@ const reducer = (state, action) => {
       showAlert: true,
       alertType: 'error',
       alertText: action.payload.message,
+    };
+  }
+
+  if (action.type === FORGOT_PASSWORD_BEGIN) {
+    return { ...state, isLoading: true };
+  }
+  if (action.type === FORGOT_PASSWORD_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'success',
+      alertText: action.payload.alertText,
+      submit: true,
+    };
+  }
+  if (action.type === FORGOT_PASSWORD_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
+      submit: false,
+    };
+  }
+
+  if (action.type === RESET_PASSWORD_BEGIN) {
+    return { ...state, isLoading: true };
+  }
+  if (action.type === RESET_PASSWORD_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      token: action.payload.token,
+      user: action.payload.user,
+      alertType: 'success',
+      alertText: action.payload.alertText,
+      submit: true,
+    };
+  }
+  if (action.type === RESET_PASSWORD_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
+      submit: false,
     };
   }
   throw new Error(`no such action : ${action.type}`);

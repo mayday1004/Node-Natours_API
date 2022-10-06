@@ -1,5 +1,18 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AllTours, TourInfo, Login, Register, Profile, Error, ShareLayout, ProtectRoute } from './pages';
+import { ProfileSetting, ProfileBooking, ProfileReviews } from './components';
+import {
+  AllTours,
+  TourInfo,
+  Login,
+  Register,
+  Profile,
+  Error,
+  ShareLayout,
+  ProtectRoute,
+  Welcome,
+  ForgotPassword,
+  ResetPassword,
+} from './pages';
 
 const App = () => {
   return (
@@ -9,7 +22,17 @@ const App = () => {
           <Route index element={<AllTours />} />
           <Route path='signup' element={<Register />} />
           <Route path='login' element={<Login />} />
-          <Route path='/tour/:id' element={<TourInfo />} />
+          <Route path='forgotPassword' element={<ForgotPassword />} />
+          <Route path='resetPassword/:token' element={<ResetPassword />} />
+          <Route path='tour/:id' element={<TourInfo />} />
+          <Route
+            path='welcome'
+            element={
+              <ProtectRoute>
+                <Welcome />
+              </ProtectRoute>
+            }
+          />
           <Route
             path='me'
             element={
@@ -17,7 +40,11 @@ const App = () => {
                 <Profile />
               </ProtectRoute>
             }
-          />
+          >
+            <Route index element={<ProfileSetting />} />
+            <Route path='my-tours' element={<ProfileBooking />} />
+            <Route path='reviews' element={<ProfileReviews />} />
+          </Route>
           <Route path='*' element={<Error />} />
         </Route>
       </Routes>

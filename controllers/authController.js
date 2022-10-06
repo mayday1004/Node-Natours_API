@@ -110,7 +110,7 @@ exports.forgotPassword = trycatch(async (req, res, next) => {
   await user.save({ validateModifiedOnly: true }); // 保存用戶更新而不跳過驗證步驟並且僅驗證修改的字段的單線解決方案：
 
   // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `http://localhost:3000/resetPassword/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: 
 											${resetURL}.\nIf you didn't forget your password, please ignore this email!`;

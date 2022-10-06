@@ -17,6 +17,12 @@ import {
   UPDATE_USER_BEGIN,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
+  FORGOT_PASSWORD_BEGIN,
+  FORGOT_PASSWORD_SUCCESS,
+  FORGOT_PASSWORD_ERROR,
+  RESET_PASSWORD_BEGIN,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_ERROR,
 } from './action';
 
 const token = Cookies.get('token');
@@ -32,6 +38,7 @@ const initialState = {
   tours: [],
   tour: '',
   reviews: [],
+  submit: false,
 };
 
 const AppContext = React.createContext();
@@ -168,6 +175,42 @@ const AppProvider = ({ children }) => {
     clearAlert();
   };
 
+  const forgotPassword = async email => {
+    dispatch({ type: FORGOT_PASSWORD_BEGIN });
+    try {
+      await authFetch.post('/users/forgotPassword', email);
+      dispatch({
+        type: FORGOT_PASSWORD_SUCCESS,
+        payload: { alertText: 'Please check your emaill for reset link.' },
+      });
+    } catch (error) {
+      dispatch({
+        type: FORGOT_PASSWORD_ERROR,
+        payload: { message: error.data.message },
+      });
+    }
+    clearAlert();
+  };
+
+  const resetPassword = async ({ resetToken, newPassword }) => {
+    dispatch({ type: RESET_PASSWORD_BEGIN });
+    try {
+      const { data } = await authFetch.patch(`/users/resetPassword/${resetToken}`, newPassword);
+      const { user, token } = data;
+      dispatch({
+        type: RESET_PASSWORD_SUCCESS,
+        payload: { user, token, alertText: 'Password changed success!' },
+      });
+      addUserToCookie({ user, token });
+    } catch (error) {
+      dispatch({
+        type: RESET_PASSWORD_ERROR,
+        payload: { message: error.data.message },
+      });
+    }
+    clearAlert();
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -179,6 +222,8 @@ const AppProvider = ({ children }) => {
         setupUser,
         logoutUser,
         updateUser,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}

@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
-import { TourCard } from '../components';
+import { TourCard, Loading } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const AllTours = () => {
-  const { getAllTours, tours } = useAppContext();
+  const { isLoading, getAllTours, tours } = useAppContext();
 
   useEffect(() => {
     getAllTours();
     // eslint-disable-next-line
   }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className='card-container'>

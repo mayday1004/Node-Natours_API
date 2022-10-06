@@ -4,14 +4,15 @@ import { FormRow } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const initialState = {
-  email: '',
   password: '',
+  passwordConfirm: '',
 };
 
-const Login = () => {
+const ResetPassword = () => {
   const [values, setValues] = useState(initialState);
-  const { user, setupUser } = useAppContext();
+  const { isLoading, user, resetPassword } = useAppContext();
   const navigate = useNavigate();
+  const resetToken = window.location.pathname.split('/')[2];
 
   const handleChange = e => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -19,9 +20,9 @@ const Login = () => {
 
   const onSubmit = e => {
     e.preventDefault();
-    const { email, password } = values;
-    const currentUser = { email, password };
-    setupUser({ currentUser, endPoint: 'login', alertText: 'Login Success! Redirectiong...' });
+    const { password, passwordConfirm } = values;
+    const newPassword = { password, passwordConfirm };
+    resetPassword({ resetToken, newPassword });
   };
 
   useEffect(() => {
@@ -31,35 +32,37 @@ const Login = () => {
       }, 3000);
     }
   }, [user, navigate]);
+
   return (
     <div className='login-form'>
-      <h2 className='heading-secondary ma-bt-lg'>Log into your account</h2>
+      <h2 className='heading-secondary ma-bt-lg'>Reset Password</h2>
       <form className='form form--login' onSubmit={onSubmit}>
-        <FormRow
-          name='email'
-          type='email'
-          placeholder='you@example.io'
-          text='Email address'
-          value={values.email}
-          handleChange={handleChange}
-        />
         <FormRow
           className='ma-bt-md'
           name='password'
           type='password'
           placeholder='••••••••'
-          text='Password'
-          minLength='8'
+          text='Enter your new password'
+          minlength='8'
           value={values.password}
           handleChange={handleChange}
         />
-        <div className='form__group form__group--login'>
-          <Link to='/forgotpassword'>Forgot Password?</Link>
-          <button className='btn btn--green'>Login</button>
+        <FormRow
+          className='ma-bt-md'
+          name='passwordConfirm'
+          type='password'
+          placeholder='••••••••'
+          text='Confirm your new password'
+          minlength='8'
+          value={values.passwordConfirm}
+          handleChange={handleChange}
+        />
+        <div className='form__group'>
+          <button className='btn btn--green'>{isLoading ? 'loading...' : 'Next'}</button>
         </div>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default ResetPassword;

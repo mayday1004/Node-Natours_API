@@ -3,7 +3,7 @@ import moment from 'moment';
 import { AiOutlineClockCircle, AiOutlineCalendar, AiOutlineStar } from 'react-icons/ai';
 import { CgPin } from 'react-icons/cg';
 import { BiTrendingUp, BiUser } from 'react-icons/bi';
-import { TourGuide, ReviewCard, PictureBox, MapLeaflet } from '../components';
+import { Loading, TourGuide, ReviewCard, PictureBox, MapLeaflet } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const TourInfo = () => {
@@ -14,9 +14,7 @@ const TourInfo = () => {
     getReviews(window.location.pathname.split('/')[2]);
   }, []);
 
-  if (!tour && reviews.length === 0) {
-    return <div className='loading'>Loading...</div>;
-  } else {
+  if (tour && reviews) {
     return (
       <>
         <section className='section-header'>
@@ -36,7 +34,7 @@ const TourInfo = () => {
               <div className='heading-box__detail'>
                 <CgPin className='heading-box__icon' />
 
-                <span className='heading-box__text'>{tour.startLocation.description}</span>
+                <span className='heading-box__text'>{tour.startLocation?.description}</span>
               </div>
             </div>
           </div>
@@ -118,6 +116,7 @@ const TourInfo = () => {
       </>
     );
   }
+  return <Loading />;
 };
 
 export default TourInfo;

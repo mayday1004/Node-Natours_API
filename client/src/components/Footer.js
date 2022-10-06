@@ -24,7 +24,7 @@ const Footer = () => {
           <Link to='#'>Contact</Link>
         </li>
       </ul>
-      <p className='footer__copyright'>© 2022 by Jonas Schmedtmann.</p>
+      <p className='footer__copyright'>© React version by May Chou.</p>
     </footer>
   );
 };

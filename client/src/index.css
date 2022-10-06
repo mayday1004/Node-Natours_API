@@ -1227,6 +1227,23 @@ body {
   margin-bottom: 2.5rem;
 }
 
+.form__group--login {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form__group--login a {
+  color: #777;
+  text-decoration: none !important;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.form__group--login a:hover,
+.form__group--login a:active {
+  color: #55c57a;
+}
+
 .form__label {
   display: block;
   font-size: 1.6rem;
