@@ -39,6 +39,20 @@ exports.getReview = trycatch(async (req, res, next) => {
   });
 });
 
+exports.getUserReview = trycatch(async (req, res, next) => {
+  const review = await Review.find({ user: req.user._id }).populate({
+    path: 'tour',
+    select: 'name',
+  });
+  if (!review) {
+    return next(new AppError('No review found with that User', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    review: review,
+  });
+});
+
 exports.updateReview = trycatch(async (req, res, next) => {
   const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

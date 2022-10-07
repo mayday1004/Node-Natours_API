@@ -4,25 +4,23 @@ import Cookies from 'js-cookie';
 import reducer from './reducer';
 import {
   CLEAR_ALERT,
-  GET_ALLTOURS_BEGIN,
+  FETCH_BEGIN,
   GET_ALLTOURS_SUCCESS,
-  GET_TOUR_BEGIN,
   GET_TOUR_SUCCESS,
-  GET_REVIEWS_BEGIN,
   GET_REVIEWS_SUCCESS,
-  SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
   LOGOUT_USER,
-  UPDATE_USER_BEGIN,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
-  FORGOT_PASSWORD_BEGIN,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_ERROR,
-  RESET_PASSWORD_BEGIN,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
+  GET_USER_BOOKING_SUCCESS,
+  GET_USER_BOOKING_ERROR,
+  GET_USER_REVIEWS_SUCCESS,
+  GET_USER_REVIEWS_ERROR,
 } from './action';
 
 const token = Cookies.get('token');
@@ -38,7 +36,9 @@ const initialState = {
   tours: [],
   tour: '',
   reviews: [],
+  userReviews: [],
   submit: false,
+  bookings: [],
 };
 
 const AppContext = React.createContext();
@@ -74,7 +74,7 @@ const AppProvider = ({ children }) => {
   };
 
   const getAllTours = async () => {
-    dispatch({ type: GET_ALLTOURS_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch('/tours');
       const { tour } = data;
@@ -89,7 +89,7 @@ const AppProvider = ({ children }) => {
   };
 
   const getTour = async endpoint => {
-    dispatch({ type: GET_TOUR_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch(`/tours/${endpoint}`);
       const { tour } = data;
@@ -104,7 +104,7 @@ const AppProvider = ({ children }) => {
   };
 
   const getReviews = async endpoint => {
-    dispatch({ type: GET_REVIEWS_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch(`/tours/${endpoint}/reviews`);
       const { review } = data;
@@ -122,7 +122,7 @@ const AppProvider = ({ children }) => {
   };
 
   const setupUser = async ({ currentUser, endPoint, alertText }) => {
-    dispatch({ type: SETUP_USER_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch.post(`/users/${endPoint}`, currentUser);
       const { user, token } = data;
@@ -136,6 +136,7 @@ const AppProvider = ({ children }) => {
         type: SETUP_USER_ERROR,
         payload: { message: error.data.message },
       });
+      logoutUser();
     }
     clearAlert();
   };
@@ -148,7 +149,7 @@ const AppProvider = ({ children }) => {
   };
 
   const updateUser = async ({ currentUser, endPoint, alertText }) => {
-    dispatch({ type: UPDATE_USER_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch.patch(`/users/${endPoint}`, currentUser, {
         headers: {
@@ -176,7 +177,7 @@ const AppProvider = ({ children }) => {
   };
 
   const forgotPassword = async email => {
-    dispatch({ type: FORGOT_PASSWORD_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       await authFetch.post('/users/forgotPassword', email);
       dispatch({
@@ -193,7 +194,7 @@ const AppProvider = ({ children }) => {
   };
 
   const resetPassword = async ({ resetToken, newPassword }) => {
-    dispatch({ type: RESET_PASSWORD_BEGIN });
+    dispatch({ type: FETCH_BEGIN });
     try {
       const { data } = await authFetch.patch(`/users/resetPassword/${resetToken}`, newPassword);
       const { user, token } = data;
@@ -205,6 +206,36 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: RESET_PASSWORD_ERROR,
+        payload: { message: error.data.message },
+      });
+    }
+    clearAlert();
+  };
+
+  const getCurrentUserBooking = async () => {
+    dispatch({ type: FETCH_BEGIN });
+    try {
+      const { data } = await authFetch.get('/bookings/userBooking');
+      const { booking } = data;
+      dispatch({ type: GET_USER_BOOKING_SUCCESS, payload: { booking } });
+    } catch (error) {
+      dispatch({
+        type: GET_USER_BOOKING_ERROR,
+        payload: { message: error.data.message },
+      });
+    }
+    clearAlert();
+  };
+
+  const getCurrentUserReviews = async () => {
+    dispatch({ type: FETCH_BEGIN });
+    try {
+      const { data } = await authFetch.get('/reviews/me');
+      const { review } = data;
+      dispatch({ type: GET_USER_REVIEWS_SUCCESS, payload: { review } });
+    } catch (error) {
+      dispatch({
+        type: GET_USER_REVIEWS_ERROR,
         payload: { message: error.data.message },
       });
     }
@@ -224,6 +255,8 @@ const AppProvider = ({ children }) => {
         updateUser,
         forgotPassword,
         resetPassword,
+        getCurrentUserBooking,
+        getCurrentUserReviews,
       }}
     >
       {children}

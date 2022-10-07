@@ -1,38 +1,40 @@
 import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AiOutlineSetting, AiOutlineStar, AiOutlineCreditCard } from 'react-icons/ai';
 import { RiBriefcase3Line } from 'react-icons/ri';
 import { FormRow, ProfileSetting } from '../components';
 import { useAppContext } from '../contexts/appContext';
 
 const Profile = () => {
+  const location = useLocation();
+
   return (
     <div className='user-view'>
       <nav className='user-view__menu'>
         <ul className='side-nav'>
-          <li className='side-nav--active'>
-            <Link to='/me'>
+          <li className={location.pathname === '/me' ? 'side-nav--active' : ''}>
+            <NavLink to='/me'>
               <AiOutlineSetting />
               Settings
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link to='my-tours'>
+          <li className={location.pathname === '/me/my-tours' ? 'side-nav--active' : ''}>
+            <NavLink to='my-tours'>
               <RiBriefcase3Line />
               My bookings
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link to='reviews'>
+          <li className={location.pathname === '/me/reviews' ? 'side-nav--active' : ''}>
+            <NavLink to='reviews'>
               <AiOutlineStar />
               My reviews
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link to='#'>
+          <li className={location.pathname === '/me/billing' ? 'side-nav--active' : ''}>
+            <NavLink to='billing'>
               <AiOutlineCreditCard />
               Billing
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </nav>

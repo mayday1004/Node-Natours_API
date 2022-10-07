@@ -1,24 +1,22 @@
 import {
   CLEAR_ALERT,
-  GET_ALLTOURS_BEGIN,
+  FETCH_BEGIN,
   GET_ALLTOURS_SUCCESS,
-  GET_TOUR_BEGIN,
   GET_TOUR_SUCCESS,
-  GET_REVIEWS_BEGIN,
   GET_REVIEWS_SUCCESS,
-  SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
   LOGOUT_USER,
-  UPDATE_USER_BEGIN,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
-  FORGOT_PASSWORD_BEGIN,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_ERROR,
-  RESET_PASSWORD_BEGIN,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_ERROR,
+  GET_USER_BOOKING_SUCCESS,
+  GET_USER_BOOKING_ERROR,
+  GET_USER_REVIEWS_SUCCESS,
+  GET_USER_REVIEWS_ERROR,
 } from './action';
 
 import { initialState } from './appContext';
@@ -32,10 +30,10 @@ const reducer = (state, action) => {
       alertText: '',
     };
   }
-
-  if (action.type === GET_ALLTOURS_BEGIN) {
+  if (action.type === FETCH_BEGIN) {
     return { ...state, isLoading: true };
   }
+
   if (action.type === GET_ALLTOURS_SUCCESS) {
     return {
       ...state,
@@ -45,9 +43,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === GET_TOUR_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === GET_TOUR_SUCCESS) {
     return {
       ...state,
@@ -56,9 +51,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === GET_REVIEWS_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === GET_REVIEWS_SUCCESS) {
     return {
       ...state,
@@ -67,9 +59,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === SETUP_USER_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === SETUP_USER_SUCCESS) {
     return {
       ...state,
@@ -99,9 +88,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === UPDATE_USER_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === UPDATE_USER_SUCCESS) {
     return {
       ...state,
@@ -123,9 +109,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === FORGOT_PASSWORD_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === FORGOT_PASSWORD_SUCCESS) {
     return {
       ...state,
@@ -147,9 +130,6 @@ const reducer = (state, action) => {
     };
   }
 
-  if (action.type === RESET_PASSWORD_BEGIN) {
-    return { ...state, isLoading: true };
-  }
   if (action.type === RESET_PASSWORD_SUCCESS) {
     return {
       ...state,
@@ -170,6 +150,40 @@ const reducer = (state, action) => {
       alertType: 'error',
       alertText: action.payload.message,
       submit: false,
+    };
+  }
+
+  if (action.type === GET_USER_BOOKING_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      bookings: action.payload.booking,
+    };
+  }
+  if (action.type === GET_USER_BOOKING_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
+    };
+  }
+
+  if (action.type === GET_USER_REVIEWS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      userReviews: action.payload.review,
+    };
+  }
+  if (action.type === GET_USER_REVIEWS_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
     };
   }
   throw new Error(`no such action : ${action.type}`);

@@ -9,13 +9,14 @@ router
   .route('/')
   .get(reviewController.getAllReviews)
   .post(
-    authController.restrictTo('user'),
     authController.protect,
+    authController.restrictTo('user'),
     reviewController.setTourUserIds,
     reviewController.createReview
   );
 
 router.use(authController.protect);
+router.route('/me').get(reviewController.getUserReview);
 router
   .route('/:id')
   .get(reviewController.getReview)

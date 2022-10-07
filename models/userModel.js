@@ -117,7 +117,6 @@ userSchema.methods.toJSON = function () {
   delete sentUserData.passwordChangedAt;
   delete sentUserData.active;
   delete sentUserData.__v;
-  delete sentUserData._id;
   return sentUserData;
 };
 

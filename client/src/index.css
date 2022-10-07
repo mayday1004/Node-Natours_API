@@ -1044,6 +1044,14 @@ body {
   grid-gap: 7rem;
 }
 
+.booking-container {
+  max-width: 88rem;
+  margin: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2rem;
+}
+
 .card {
   border-radius: 3px;
   overflow: hidden;
