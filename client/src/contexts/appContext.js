@@ -21,6 +21,8 @@ import {
   GET_USER_BOOKING_ERROR,
   GET_USER_REVIEWS_SUCCESS,
   GET_USER_REVIEWS_ERROR,
+  PAYMENT_SUCCESS,
+  PAYMENT_ERROR,
 } from './action';
 
 const token = Cookies.get('token');
@@ -242,6 +244,17 @@ const AppProvider = ({ children }) => {
     clearAlert();
   };
 
+  const payByPrime = async paymentData => {
+    dispatch({ type: FETCH_BEGIN });
+    try {
+      await authFetch.post('/bookings/pay-by-prime', paymentData);
+      dispatch({ type: PAYMENT_SUCCESS, payload: { alertText: 'Payment success!' } });
+    } catch (error) {
+      dispatch({ type: PAYMENT_ERROR, payload: { message: error.data.message } });
+    }
+    clearAlert();
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -257,6 +270,7 @@ const AppProvider = ({ children }) => {
         resetPassword,
         getCurrentUserBooking,
         getCurrentUserReviews,
+        payByPrime,
       }}
     >
       {children}

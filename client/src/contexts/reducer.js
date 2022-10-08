@@ -17,6 +17,8 @@ import {
   GET_USER_BOOKING_ERROR,
   GET_USER_REVIEWS_SUCCESS,
   GET_USER_REVIEWS_ERROR,
+  PAYMENT_SUCCESS,
+  PAYMENT_ERROR,
 } from './action';
 
 import { initialState } from './appContext';
@@ -178,6 +180,25 @@ const reducer = (state, action) => {
     };
   }
   if (action.type === GET_USER_REVIEWS_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
+    };
+  }
+
+  if (action.type === PAYMENT_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'success',
+      alertText: action.payload.alertText,
+    };
+  }
+  if (action.type === PAYMENT_ERROR) {
     return {
       ...state,
       isLoading: false,

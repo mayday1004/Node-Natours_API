@@ -12,6 +12,7 @@ import {
   Welcome,
   ForgotPassword,
   ResetPassword,
+  Booking,
 } from './pages';
 
 const App = () => {
@@ -30,6 +31,14 @@ const App = () => {
             element={
               <ProtectRoute>
                 <Welcome />
+              </ProtectRoute>
+            }
+          />
+          <Route
+            path='booking'
+            element={
+              <ProtectRoute>
+                <Booking />
               </ProtectRoute>
             }
           />

@@ -9,6 +9,7 @@ import Error from './Error';
 import Welcome from './Welcome';
 import ShareLayout from './ShareLayout';
 import ProtectRoute from './ProtectRoute';
+import Booking from './Booking';
 export {
   AllTours,
   TourInfo,
@@ -21,4 +22,5 @@ export {
   Welcome,
   ForgotPassword,
   ResetPassword,
+  Booking,
 };

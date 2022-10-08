@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { AiOutlineClockCircle, AiOutlineCalendar, AiOutlineStar } from 'react-icons/ai';
 import { CgPin } from 'react-icons/cg';
@@ -7,7 +8,7 @@ import { Loading, TourGuide, ReviewCard, PictureBox, MapLeaflet } from '../compo
 import { useAppContext } from '../contexts/appContext';
 
 const TourInfo = () => {
-  const { getTour, tour, getReviews, reviews } = useAppContext();
+  const { user, getTour, tour, getReviews, reviews } = useAppContext();
 
   useEffect(() => {
     getTour(window.location.pathname.split('/')[2]);
@@ -109,7 +110,9 @@ const TourInfo = () => {
               <p className='cta__text'>
                 {tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
               </p>
-              <button className='btn btn--green span-all-rows'>Book tour now!</button>
+              <Link to={user ? '/booking' : '/login'} className='btn btn--green span-all-rows'>
+                Book tour now!
+              </Link>
             </div>
           </div>
         </section>

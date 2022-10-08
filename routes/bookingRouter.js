@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(authController.protect);
 
 router.get('/userBooking', bookingController.getCurrentUserBooking);
-// router.get('/checkout-session/:tourId', bookingController.getCheckoutSession);
+router.post('/pay-by-prime', bookingController.payByPrime);
 
 router.use(authController.restrictTo('admin', 'lead-guide'));
 
