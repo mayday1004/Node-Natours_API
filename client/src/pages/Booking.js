@@ -8,16 +8,14 @@ const Booking = () => {
 
   const tappay = document.createElement('script');
   tappay.setAttribute('src', 'https://js.tappaysdk.com/tpdirect/v5.13.1');
-  let TPDirect;
-
-  document.body.appendChild(tappay); //add everithing to the DOM
+  let TPDirect = window.TPDirect;
 
   useEffect(() => {
     tappay.addEventListener('load', () => {
-      TPDirect = window.TPDirect;
       TPDirect.setupSDK(11327, 'app_whdEWBH8e8Lzy4N6BysVRRMILYORF6UxXbiOFsICkz0J9j1C0JUlCHv1tVJC', 'sandbox');
       TPDirect.card.setup('#cardview-container');
     });
+    document.body.appendChild(tappay); //add everithing to the DOM
   }, []);
 
   function onClick(e) {

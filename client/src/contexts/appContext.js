@@ -166,7 +166,6 @@ const AppProvider = ({ children }) => {
       });
       addUserToCookie({ user, token });
     } catch (error) {
-      console.log(error);
       if (error.status !== 401) {
         //如果是401錯誤會被axios攔截器處理
         dispatch({
